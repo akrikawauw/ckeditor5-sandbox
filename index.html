@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>CKEditor 5 Framework – Implementing a simple widget</title>
+
+    <style>
+      .simple-box {
+        padding: 10px;
+        margin: 1em 0;
+
+        background: rgba(0, 0, 0, 0.1);
+        border: solid 1px hsl(0, 0%, 77%);
+        border-radius: 2px;
+      }
+
+      .simple-box-title,
+      .simple-box-description {
+        padding: 10px;
+        margin: 0;
+
+        background: #fff;
+        border: solid 1px hsl(0, 0%, 77%);
+      }
+
+      .simple-box-title {
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="editor">
+      <p>This is a simple box:</p>
+
+      <section class="simple-box">
+        <h1 class="simple-box-title">Box title</h1>
+        <div class="simple-box-description">
+          <p>The description goes here.</p>
+          <ul>
+            <li>It can contain lists,</li>
+            <li>and other block elements like headings.</li>
+          </ul>
+        </div>
+      </section>
+      <p>This is an accordion:</p>
+      <div class="accordion uppercase-title" id="aa1">
+        <div class="screen-reader-text">Accessible Accordionio</div>
+        <div class="card" id="top">
+          <div class="card-header" id="collapse-0-header">
+            <h3 class="mb-0">
+              <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-0" aria-expanded="false" aria-controls="collapse-0">
+                <span class="btn-text">Sleep over your phone and make cute snoring noises touch water with paw then recoil in horror</span>
+              </button>
+            </h3>
+          </div>
+          <div id="collapse-0" class="collapse " aria-labelledby="collapse-0-header" data-parent="#aa1" role="region">
+            <p>content here</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

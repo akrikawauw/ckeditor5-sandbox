@@ -2,6 +2,7 @@
 
 import { Plugin, Widget, toWidget, toWidgetEditable } from 'ckeditor5';
 
+// import { uid } from 'ckeditor5/src/utils';
 import InsertUwBootstrapAccordionCommand from './insertuwbootstrapaccordioncommand';
 
 export default class UwBootstrapAccordionEditing extends Plugin {
@@ -93,6 +94,7 @@ export default class UwBootstrapAccordionEditing extends Plugin {
 
       // Allow in place wehere other blocks are allowed (e.g. directly in the root).
       allowWhere: '$block',
+      allowAttributes: ['id'],
       allowChildren: ['uwBootstrapAccordionItem'],
     });
 
@@ -117,6 +119,7 @@ export default class UwBootstrapAccordionEditing extends Plugin {
     schema.register('uwBootstrapAccordionButton', {
       // Cannot be split or left by the caret.
       isLimit: true,
+      allowAttributes: ['data-toggle', 'data-target', 'aria-expanded', 'aria-controls'],
       allowIn: 'uwBootstrapAccordionHeading',
 
       // Allow content which is allowed in blocks (i.e. text with attributes).
@@ -125,7 +128,7 @@ export default class UwBootstrapAccordionEditing extends Plugin {
 
     schema.register( 'uwBootstrapAccordionCollapse', {
       allowIn: 'uwBootstrapAccordionItem',
-      // allowContentOf: '$root',
+      allowAttributes: ['id'],
       allowChildren: 'uwBootstrapAccordionBody',
     });
 
@@ -135,44 +138,57 @@ export default class UwBootstrapAccordionEditing extends Plugin {
       allowIn: 'uwBootstrapAccordionCollapse',
 
       // Allow content which is allowed in the root (e.g. paragraphs).
-      allowContentOf: '$root',
+      allowContentOf: '$block',
     });
 
-    // schema.addChildCheck((context, childDefinition) => {
-    //   if (
-    //     context.endsWith('uwBootstrapAccordionChildDescription') &&
-    //     childDefinition.name == 'uwBootstrapAccordionChildCard'
-    //   ) {
-    //     return false;
-    //   }
-    // });
   }
 
   _defineConverters() {
     const conversion = this.editor.conversion;
 
-    // <bootstrapAccordion> converters
-    conversion.for('upcast').elementToElement({
-      model: 'uwBootstrapAccordion',
-      view: {
-        name: 'div',
-        classes: 'accordion',
-      },
+    conversion.attributeToAttribute({
+      model: 'uwBootstrapAccordionId',
+      view: 'id'
     });
+
+    // <bootstrapAccordion> converters
+    // TODO: explore using a dispatcher
+    conversion.for('upcast').add ( dispatcher => {
+      // Look for every accordion.
+      dispatcher.on( 'element:div', ( evt, data, conversionApi ) => {
+        const viewItem = data.viewItem;
+        const {
+          consumable,
+          writer,
+          safeInsert,
+          convertChildren,
+          updateConversionResult
+        } = conversionApi;
+
+        if (consumable.consume(viewItem, {name: true, classes: 'accordion'})) {
+          const modelElement = writer.createElement('uwBootstrapAccordion', {
+            uwBootstrapAccordionId: viewItem.getAttribute('id') || uid()
+          });
+          if (safeInsert(modelElement, data.modelCursor)) {
+            convertChildren(viewItem, modelElement);
+            updateConversionResult(modelElement, data);
+          }
+        }
+      });
+    })
     conversion.for('dataDowncast').elementToElement({
       model: 'uwBootstrapAccordion',
       view: {
         name: 'div',
-        classes: 'accordion',
+        classes: 'accordion'
       },
     });
     conversion.for('editingDowncast').elementToElement({
       model: 'uwBootstrapAccordion',
       view: (modelElement, { writer: viewWriter }) => {
         const div = viewWriter.createContainerElement('div', {
-          class: 'accordion',
+          class: 'accordion'
         });
-
         return toWidget(div, viewWriter, {
           label: 'UW bootstrap accordion widget',
         });
@@ -221,12 +237,28 @@ export default class UwBootstrapAccordionEditing extends Plugin {
     });
 
     // uwBootstrapAccordionHeading converters
-    conversion.for('upcast').elementToElement({
-      model: 'uwBootstrapAccordionHeading',
-      view: {
-        name: 'div',
-        classes: 'card-header',
-      },
+    conversion.for('upcast').add(dispatcher => {
+      dispatcher.on('element:div', (evt, data, conversionApi) => {
+        // Get all the necessary items from the conversion API object.
+        const {
+          consumable,
+          writer,
+          safeInsert,
+          convertChildren,
+          updateConversionResult
+        } = conversionApi;
+        if (consumable.consume(data.viewItem, { name: true, classes: 'card-header' })) {
+          const modelElement = writer.createElement('uwBootstrapAccordionHeading', [
+            writer.createElement('h3', {class: 'mb-0'})
+          ]);
+          // Forces insertion and conversion of a clean
+          // `uwBootstrapAccordionHeading` model element.
+          if (safeInsert(modelElement, data.modelCursor)) {
+            convertChildren(data.viewItem, modelElement);
+            updateConversionResult(modelElement, data);
+          }
+        }
+      });
     });
     conversion.for('dataDowncast').elementToElement({
       model: 'uwBootstrapAccordionHeading',
@@ -250,19 +282,56 @@ export default class UwBootstrapAccordionEditing extends Plugin {
       }});
 
     // uwBootstrapAccordionButton
-    // TODO: dig into how this model element should be cast in all ways. it's complex. where does
-    //       its state come from, does bs's js provide some of this?
-    conversion.for('upcast').elementToElement({
-      model: ( viewElement, { writer } ) => {
-        return writer.createElement( 'uwBootstrapAccordionButton', { expanded: viewElement.getAttribute( 'aria-expanded' ) } );
-      },
-      // model: 'uwBootstrapAccordionButton',
-      view: {
-        name: 'button',
-        classes: ['btn', 'btn-link'],
-        attributes: [ 'data-toggle', 'data-target', 'aria-expanded', 'aria-controls'],
-      },
+    // TODO: dig into how this model element should be cast in all ways. it's complex.
+    conversion.for('upcast').add(dispatcher => {
+      dispatcher.on('element:button', (evt, data, conversionApi) => {
+        // Get all the necessary items from the conversion API object.
+        const {
+          consumable,
+          writer,
+          safeInsert,
+          convertChildren,
+          updateConversionResult
+        } = conversionApi;
+        console.log(data.viewItem);
+        const wrapper = { name: true, classes: ['btn btn-link']};
+        const innerWrapper = {name: true, class: 'btn-text'};
+        // Get the first child element.
+        console.log(innerWrapper)
+        const firstChildItem = data.viewItem.getChild( 0 );
+        // Check if the first element is a <div>.
+        if ( !firstChildItem.is( 'element', 'span' ) ) {
+          return;
+        }
+        const modelElement = writer.createElement('uwBootstrapAccordionButton');
+        // if (consumable.consume(data.viewItem, wrapper)) {
+
+
+          // console.log(modelElement);
+          // Forces insertion and conversion of a clean
+          // `uwBootstrapAccordionHeading` model element.
+          if (safeInsert(modelElement, data.modelCursor)) {
+            console.log(firstChildItem)
+            consumable.consume( data.viewItem, wrapper);
+            consumable.consume( firstChildItem, innerWrapper);
+            convertChildren(firstChildItem, modelElement);
+            console.log(modelElement);
+            updateConversionResult(modelElement, data);
+
+          }
+
+      });
     });
+    //   model: ( viewElement, { writer } ) => {
+    //     return writer.createElement( 'uwBootstrapAccordionButton', { expanded: viewElement.getAttribute( 'aria-expanded' ) } );
+    //   },
+    //   // model: 'uwBootstrapAccordionButton',
+    //   view: {
+    //     name: 'button',
+    //     classes: ['btn', 'btn-link'],
+    //     attributes: [ 'data-toggle', 'data-target', 'aria-expanded', 'aria-controls'],
+    //   },
+    // });
     conversion.for('dataDowncast').elementToElement({
       model: 'uwBootstrapAccordionButton',
       view: {
@@ -271,20 +340,32 @@ export default class UwBootstrapAccordionEditing extends Plugin {
         attributes: [ 'data-toggle', 'data-target', 'aria-expanded', 'aria-controls'],
       },
     });
-    conversion.for('editingDowncast').elementToStructure({
+    conversion.for('editingDowncast').elementToElement({
       model: 'uwBootstrapAccordionButton',
       view: (modelElement, conversionApi) => {
         const {writer} = conversionApi;
         const buttonTextSpan = writer.createEditableElement(
           'span',
-          {class: 'btn-text'}, [
-          ]);
-        const buttonA = writer.createContainerElement('button', {class: 'btn btn-link'}, [
+          {class: 'btn-text'},
+        );
+        const button = writer.createContainerElement('button', {classes: 'btn btn-link'}, [
           buttonTextSpan
         ]);
-        return toWidgetEditable(buttonA, writer);
+        // return writer.createContainerElement('button', {classes: 'btn btn-link'}, [
+        //   buttonTextSpan
+        // ]);
+        const buttonAndSpan = writer.createContainerElement('button', {class: 'btn btn-link'}, [
+          buttonTextSpan
+        ]);
+        return toWidget(buttonAndSpan, writer);
 
-      }});
+      }
+    });
+    // For <span>s
+    // conversion.for('downcast').attributeToAttribute( {
+    //   model: {name: 'span', class: ['btn-text']},
+    //   view: 'span'
+    // })
 
     // uwBootstrapAccordionCollapse
     conversion.for('upcast').elementToElement({

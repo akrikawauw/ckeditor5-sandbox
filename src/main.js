@@ -7,6 +7,7 @@ import {
   List,
   Bold,
   Italic,
+  GeneralHtmlSupport,
 } from 'ckeditor5';
 
 import CKEditorInspector from '@ckeditor/ckeditor5-inspector';
@@ -16,6 +17,7 @@ import CKEditorInspector from '@ckeditor/ckeditor5-inspector';
 import 'ckeditor5/ckeditor5.css';
 import SimpleBox from './simplebox/simplebox';
 import UwBootstrapAccordion from './uwbootstrapaccordion/uwbootstrapaccordion';
+import JustAButton from './justabutton/justabutton';
 
 // Get the HTML element with the ID of 'app'.
 const element = document.querySelector('#editor');
@@ -25,14 +27,29 @@ const editor = await ClassicEditor.create(element, {
   licenseKey: 'GPL', // Or '<YOUR_LICENSE_KEY>'.
   plugins: [
     Essentials,
+    GeneralHtmlSupport,
     Paragraph,
     Heading,
     List,
     Bold,
     Italic,
     SimpleBox,
-    UwBootstrapAccordion,
+    // UwBootstrapAccordion,
+    JustAButton,
   ],
+  // HTMLSupport options.
+  htmlSupport: {
+    allow: [
+      { name: 'button' },
+      { name: 'span' },
+      {
+        name: /.*/,
+        attributes: true,
+        classes: true,
+        styles: true,
+      },
+    ],
+  },
   // Add the toolbar configuration.
   toolbar: [
     'heading',
@@ -41,7 +58,8 @@ const editor = await ClassicEditor.create(element, {
     'numberedList',
     'bulletedList',
     'simpleBox',
-    'uwBootstrapAccordion',
+    // 'uwBootstrapAccordion',
+    'justAButton',
   ],
 })
   .then((editor) => {

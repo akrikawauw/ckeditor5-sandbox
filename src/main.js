@@ -7,7 +7,7 @@ import {
   List,
   Bold,
   Italic,
-  // GeneralHtmlSupport,
+  GeneralHtmlSupport,
   SourceEditing,
 } from 'ckeditor5';
 
@@ -36,17 +36,17 @@ const editor = await ClassicEditor.create(element, {
     SimpleBox,
     // UwBootstrapAccordion,
     JustAButton,
-    // GeneralHtmlSupport,
+    GeneralHtmlSupport,
     SourceEditing,
   ],
   // HTMLSupport options.
   htmlSupport: {
     allow: [
-      // {
-      //   name: 'button',
-      //   classes: true, // Allow all attributes on <button>
-      //   attributes: true, // Allow children inside <button>
-      // },
+      {
+        // name: 'button',
+        // classes: true, // Allow all attributes on <button>
+        // attributes: true, // Allow children inside <button>
+      },
       // {
       //   name: 'span',
       //   attributes: true, // Allow all attributes on <span>
@@ -61,10 +61,11 @@ const editor = await ClassicEditor.create(element, {
       },
     ],
     disallow: [
-      // {
-      //   name: 'button',
-      //   classes: ['btn', 'btn-link'],
-      // }
+      {
+        name: 'button',
+        // classes: ['btn', 'btn-link'],
+        // attributes: ['data-toggle'],
+      }
     ],
   },
   // Add the toolbar configuration.

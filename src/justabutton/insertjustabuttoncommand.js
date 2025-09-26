@@ -23,14 +23,14 @@ export default class InsertJustAButtonCommand extends Command {
   }
 }
 
-function createSimpleBox(writer) {
+function createJustAButton(writer) {
   const justAButton = writer.createElement('justAButton');
   const justAButtonText = writer.createElement('justAButtonText');
 
-  writer.append(justAButton, justAButton);
+  // writer.append(justAButton, justAButton);
   writer.append(justAButtonText, justAButton);
 
-  // There must be at least one paragraph for the desciption to be editable.
+  // There must be at least one paragraph for the description to be editable.
   // See https://github.com/ckeditor/ckeditor5/issues/1464.
 
   return justAButton;

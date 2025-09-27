@@ -26,8 +26,10 @@ export default class InsertJustAButtonCommand extends Command {
 function createJustAButton(writer) {
   const justAButton = writer.createElement('justAButton');
   const justAButtonText = writer.createElement('justAButtonText');
+  const placeholderText = writer.createText('accordion button')
 
   // writer.append(justAButton, justAButton);
+  writer.append(placeholderText, justAButtonText)
   writer.append(justAButtonText, justAButton);
 
   // There must be at least one paragraph for the description to be editable.

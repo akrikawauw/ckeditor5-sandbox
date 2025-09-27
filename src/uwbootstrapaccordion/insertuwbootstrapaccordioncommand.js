@@ -14,7 +14,7 @@ export default class Insertuwbootstrapaccordioncommand extends Command {
     const selection = model.document.selection;
     const allowedIn = model.schema.findAllowedParent(
       selection.getFirstPosition(),
-      'bootstrapAccordion'
+      'uwBootstrapAccordion'
     );
 
     this.isEnabled = allowedIn !== null;
@@ -22,8 +22,8 @@ export default class Insertuwbootstrapaccordioncommand extends Command {
 }
 
 function createBootstrapAccordion(writer) {
-  const bootstrapAccordion = writer.createElement('bootstrapAccordion');
-  const bootstrapAccordionBody = writer.createElement('bootstrapAccordionBody');
+  const bootstrapAccordion = writer.createElement('uwBootstrapAccordion');
+  const bootstrapAccordionBody = writer.createElement('uwBootstrapAccordionBody');
 
   writer.append(bootstrapAccordionBody, bootstrapAccordion);
 

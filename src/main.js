@@ -34,7 +34,7 @@ const editor = await ClassicEditor.create(element, {
     Bold,
     Italic,
     SimpleBox,
-    // UwBootstrapAccordion,
+    UwBootstrapAccordion,
     JustAButton,
     GeneralHtmlSupport,
     SourceEditing,
@@ -43,7 +43,8 @@ const editor = await ClassicEditor.create(element, {
   htmlSupport: {
     allow: [
       {
-        // name: 'button',
+        name: 'button',
+        classes: /^(?!.*btn)/,
         // classes: true, // Allow all attributes on <button>
         // attributes: true, // Allow children inside <button>
       },
@@ -53,17 +54,17 @@ const editor = await ClassicEditor.create(element, {
       //   classes: true, // Allow classes on <span>
       //   styles: true, // Allow styles on <span>
       // },
-      {
-        name: /.*/,
-        attributes: true,
-        classes: true,
-        styles: true,
-      },
+      // {
+      //   name: /.*/,
+      //   attributes: true,
+      //   classes: true,
+      //   styles: true,
+      // },
     ],
     disallow: [
       {
         name: 'button',
-        // classes: ['btn', 'btn-link'],
+        // classes: /(?!.*btn)/,
         // attributes: ['data-toggle'],
       }
     ],
@@ -76,9 +77,10 @@ const editor = await ClassicEditor.create(element, {
     'numberedList',
     'bulletedList',
     'simpleBox',
-    // 'uwBootstrapAccordion',
+    'uwBootstrapAccordion',
     'justAButton',
     'sourceEditing',
+
   ],
 })
   .then((editor) => {

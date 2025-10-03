@@ -1,6 +1,7 @@
 // Import plugins by adding them to the previously added import.
 import {
   ClassicEditor,
+  Clipboard,
   Essentials,
   Paragraph,
   Heading,
@@ -22,12 +23,14 @@ import JustAButton from './justabutton/justabutton';
 
 // Get the HTML element with the ID of 'app'.
 const element = document.querySelector('#editor');
+// const watchdog = new EditorWatchdog(ClassicEditor);
 
 // Update the call to the `create()` method.
 const editor = await ClassicEditor.create(element, {
   licenseKey: 'GPL', // Or '<YOUR_LICENSE_KEY>'.
   plugins: [
     Essentials,
+    Clipboard,
     Paragraph,
     Heading,
     List,
@@ -66,8 +69,11 @@ const editor = await ClassicEditor.create(element, {
         name: 'button',
         // classes: /(?!.*btn)/,
         // attributes: ['data-toggle'],
-      }
+      },
     ],
+  },
+  uwBootstrapAccordion: {
+    toolbar: ['uwBootstrapAccordionItem'],
   },
   // Add the toolbar configuration.
   toolbar: [
@@ -80,7 +86,6 @@ const editor = await ClassicEditor.create(element, {
     'uwBootstrapAccordion',
     'justAButton',
     'sourceEditing',
-
   ],
 })
   .then((editor) => {

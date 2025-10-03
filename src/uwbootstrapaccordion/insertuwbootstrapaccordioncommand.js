@@ -1,6 +1,8 @@
 import { Command } from 'ckeditor5';
 
-export default class Insertuwbootstrapaccordioncommand extends Command {
+import { createBootstrapAccordionItem } from './insertuwbootstrapaccordionitemcommand';
+
+export class InsertUwBootstrapAccordionCommand extends Command {
   execute() {
     this.editor.model.change((writer) => {
       // Inster <bootstrapAccordion>*</bootstrapAccordion> at the current selection position
@@ -21,13 +23,21 @@ export default class Insertuwbootstrapaccordioncommand extends Command {
   }
 }
 
-function createBootstrapAccordion(writer) {
+export const createBootstrapAccordion = (writer) => {
   const bootstrapAccordion = writer.createElement('uwBootstrapAccordion');
-  const bootstrapAccordionBody = writer.createElement('uwBootstrapAccordionBody');
-
-  writer.append(bootstrapAccordionBody, bootstrapAccordion);
-
-  writer.appendElement('paragraph', bootstrapAccordionBody);
+  const bootstrapAccordionAccessibleTitle = writer.createElement(
+    'uwBootstrapAccordionAccessibleTitle'
+  );
+  const bootstrapAccordionItem = createBootstrapAccordionItem(writer);
+  const placeholderAccessibleTitleText = writer.createText(
+    'Accessible title here'
+  );
+  writer.append(
+    placeholderAccessibleTitleText,
+    bootstrapAccordionAccessibleTitle
+  );
+  writer.append(bootstrapAccordionAccessibleTitle, bootstrapAccordion);
+  writer.append(bootstrapAccordionItem, bootstrapAccordion);
 
   return bootstrapAccordion;
-}
+};

@@ -1,6 +1,8 @@
 import { Command } from 'ckeditor5';
 
-export default class Insertuwbootstrapaccordioncommand extends Command {
+import { createBootstrapAccordionItem } from './insertuwbootstrapaccordionitemcommand';
+
+export class InsertUwBootstrapAccordionCommand extends Command {
   execute() {
     this.editor.model.change((writer) => {
       // Inster <bootstrapAccordion>*</bootstrapAccordion> at the current selection position
@@ -14,20 +16,28 @@ export default class Insertuwbootstrapaccordioncommand extends Command {
     const selection = model.document.selection;
     const allowedIn = model.schema.findAllowedParent(
       selection.getFirstPosition(),
-      'bootstrapAccordion'
+      'uwBootstrapAccordion'
     );
 
     this.isEnabled = allowedIn !== null;
   }
 }
 
-function createBootstrapAccordion(writer) {
-  const bootstrapAccordion = writer.createElement('bootstrapAccordion');
-  const bootstrapAccordionBody = writer.createElement('bootstrapAccordionBody');
-
-  writer.append(bootstrapAccordionBody, bootstrapAccordion);
-
-  writer.appendElement('paragraph', bootstrapAccordionBody);
+export const createBootstrapAccordion = (writer) => {
+  const bootstrapAccordion = writer.createElement('uwBootstrapAccordion');
+  const bootstrapAccordionAccessibleTitle = writer.createElement(
+    'uwBootstrapAccordionAccessibleTitle'
+  );
+  const bootstrapAccordionItem = createBootstrapAccordionItem(writer);
+  const placeholderAccessibleTitleText = writer.createText(
+    'Accessible title here'
+  );
+  writer.append(
+    placeholderAccessibleTitleText,
+    bootstrapAccordionAccessibleTitle
+  );
+  writer.append(bootstrapAccordionAccessibleTitle, bootstrapAccordion);
+  writer.append(bootstrapAccordionItem, bootstrapAccordion);
 
   return bootstrapAccordion;
-}
+};

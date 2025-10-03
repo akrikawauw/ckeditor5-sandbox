@@ -1,6 +1,7 @@
 // Import plugins by adding them to the previously added import.
 import {
   ClassicEditor,
+  Clipboard,
   Essentials,
   Paragraph,
   Heading,
@@ -8,6 +9,7 @@ import {
   Bold,
   Italic,
   GeneralHtmlSupport,
+  SourceEditing,
 } from 'ckeditor5';
 
 import CKEditorInspector from '@ckeditor/ckeditor5-inspector';
@@ -21,34 +23,57 @@ import JustAButton from './justabutton/justabutton';
 
 // Get the HTML element with the ID of 'app'.
 const element = document.querySelector('#editor');
+// const watchdog = new EditorWatchdog(ClassicEditor);
 
 // Update the call to the `create()` method.
 const editor = await ClassicEditor.create(element, {
   licenseKey: 'GPL', // Or '<YOUR_LICENSE_KEY>'.
   plugins: [
     Essentials,
-    GeneralHtmlSupport,
+    Clipboard,
     Paragraph,
     Heading,
     List,
     Bold,
     Italic,
     SimpleBox,
-    // UwBootstrapAccordion,
+    UwBootstrapAccordion,
     JustAButton,
+    GeneralHtmlSupport,
+    SourceEditing,
   ],
   // HTMLSupport options.
   htmlSupport: {
     allow: [
-      { name: 'button' },
-      { name: 'span' },
       {
-        name: /.*/,
-        attributes: true,
-        classes: true,
-        styles: true,
+        name: 'button',
+        classes: /^(?!.*btn)/,
+        // classes: true, // Allow all attributes on <button>
+        // attributes: true, // Allow children inside <button>
+      },
+      // {
+      //   name: 'span',
+      //   attributes: true, // Allow all attributes on <span>
+      //   classes: true, // Allow classes on <span>
+      //   styles: true, // Allow styles on <span>
+      // },
+      // {
+      //   name: /.*/,
+      //   attributes: true,
+      //   classes: true,
+      //   styles: true,
+      // },
+    ],
+    disallow: [
+      {
+        name: 'button',
+        // classes: /(?!.*btn)/,
+        // attributes: ['data-toggle'],
       },
     ],
+  },
+  uwBootstrapAccordion: {
+    toolbar: ['uwBootstrapAccordionItem'],
   },
   // Add the toolbar configuration.
   toolbar: [
@@ -58,8 +83,9 @@ const editor = await ClassicEditor.create(element, {
     'numberedList',
     'bulletedList',
     'simpleBox',
-    // 'uwBootstrapAccordion',
+    'uwBootstrapAccordion',
     'justAButton',
+    'sourceEditing',
   ],
 })
   .then((editor) => {

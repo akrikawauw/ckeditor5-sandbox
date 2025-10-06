@@ -285,34 +285,12 @@ export default class UwBootstrapAccordionEditing extends Plugin {
     });
 
     // uwBootstrapAccordionHeading converters
-    conversion.for('upcast').add((dispatcher) => {
-      dispatcher.on('element:div', (evt, data, conversionApi) => {
-        // Get all the necessary items from the conversion API object.
-        const {
-          consumable,
-          writer,
-          safeInsert,
-          convertChildren,
-          updateConversionResult,
-        } = conversionApi;
-        if (
-          consumable.consume(data.viewItem, {
-            name: true,
-            classes: 'card-header',
-          })
-        ) {
-          const modelElement = writer.createElement(
-            'uwBootstrapAccordionHeading',
-            [writer.createElement('h3', { class: 'mb-0' })]
-          );
-          // Forces insertion and conversion of a clean
-          // `uwBootstrapAccordionHeading` model element.
-          if (safeInsert(modelElement, data.modelCursor)) {
-            convertChildren(data.viewItem, modelElement);
-            updateConversionResult(modelElement, data);
-          }
-        }
-      });
+    conversion.for('upcast').elementToElement({
+      model: 'uwBootstrapAccordionHeading',
+      view: {
+        name: 'div',
+        classes: 'card-header',
+      },
     });
     conversion.for('dataDowncast').elementToElement({
       model: 'uwBootstrapAccordionHeading',
@@ -321,30 +299,72 @@ export default class UwBootstrapAccordionEditing extends Plugin {
         classes: 'card-header',
       },
     });
-    conversion.for('editingDowncast').elementToStructure({
+    conversion.for('editingDowncast').elementToElement({
       model: 'uwBootstrapAccordionHeading',
-      view: (modelElement, conversionApi) => {
-        const { writer } = conversionApi;
-        const headingViewElement = writer.createContainerElement(
-          'h3',
-          { class: 'mb-0' },
-          [writer.createSlot()]
-        );
-        return writer.createContainerElement('div', { class: 'card-header' }, [
-          headingViewElement,
-        ]);
+      view: (modelElement, { writer: viewWriter }) => {
+        const section = viewWriter.createContainerElement('div', {
+          class: 'card-header',
+        });
+
+        return toWidget(section, viewWriter, {
+          label: 'card header',
+        });
       },
     });
 
+    // conversion.for('upcast').add((dispatcher) => {
+    //   dispatcher.on('element:div', (evt, data, conversionApi) => {
+    //     // Get all the necessary items from the conversion API object.
+    //     const {
+    //       consumable,
+    //       writer,
+    //       safeInsert,
+    //       convertChildren,
+    //       updateConversionResult,
+    //     } = conversionApi;
+    //     if (
+    //       consumable.consume(data.viewItem, {
+    //         name: true,
+    //         classes: 'card-header',
+    //       })
+    //     ) {
+    //       const modelElement = writer.createElement(
+    //         'uwBootstrapAccordionHeading',
+    //         [writer.createElement('h3', { class: 'mb-0' })]
+    //       );
+    //       // Forces insertion and conversion of a clean
+    //       // `uwBootstrapAccordionHeading` model element.
+    //       if (safeInsert(modelElement, data.modelCursor)) {
+    //         convertChildren(data.viewItem, modelElement);
+    //         updateConversionResult(modelElement, data);
+    //       }
+    //     }
+    //   });
+    // });
+    // conversion.for('dataDowncast').elementToElement({
+    //   model: 'uwBootstrapAccordionHeading',
+    //   view: {
+    //     name: 'div',
+    //     classes: 'card-header',
+    //   },
+    // });
+    // conversion.for('editingDowncast').elementToStructure({
+    //   model: 'uwBootstrapAccordionHeading',
+    //   view: (modelElement, conversionApi) => {
+    //     const { writer } = conversionApi;
+    //     const headingViewElement = writer.createContainerElement(
+    //       'h3',
+    //       { class: 'mb-0' },
+    //       [writer.createSlot()]
+    //     );
+    //     return writer.createContainerElement('div', { class: 'card-header' }, [
+    //       headingViewElement,
+    //     ]);
+    //   },
+    // });
+
     // uwBootstrapAccordionButton
     // TODO: dig into how this model element should be cast in all ways. it's complex.
-    conversion.for('upcast').elementToElement({
-      model: 'uwBootstrapAccordionButton',
-      view: {
-        name: 'button',
-        classes: ['btn', 'btn-link'],
-      },
-    });
 
     // conversion.for('upcast').add(dispatcher => {
     //   dispatcher.on('element:button', (evt, data, conversionApi) => {
@@ -395,19 +415,84 @@ export default class UwBootstrapAccordionEditing extends Plugin {
     //     attributes: [ 'data-toggle', 'data-target', 'aria-expanded', 'aria-controls'],
     //   },
     // });
-    conversion.for('editingDowncast').elementToElement({
-      model: 'uwBootstrapAccordionButton',
+
+    //   editor.conversion
+    // .for( 'upcast' )
+    // .elementToElement( {
+    // 	view: {
+    // 		name: 'p',
+    // 		classes: 'heading'
+    // 	},
+    // 	model: ( viewElement, { writer } ) => {
+    // 		return writer.createElement( 'heading' );
+    // 	}
+    // } );
+
+    conversion.for('upcast').elementToElement({
+      model: (viewElement, { writer }) => {
+        return writer.createElement('uwBootstrapAccordionButton');
+      },
       view: {
-        name: 'button',
-        classes: ['btn', 'btn-link'],
+        name: 'h3',
+        classes: ['mb-0'],
       },
     });
 
-    conversion.for('dataDowncast').elementToElement({
+    //   editor.conversion
+    // .for( 'downcast' )
+    // .elementToStructure( {
+    // 	model: 'wrappedParagraph',
+    // 	view: ( modelElement, conversionApi ) => {
+    // 		const { writer } = conversionApi;
+    // 		const paragraphViewElement = writer.createContainerElement( 'p', {}, [
+    // 			writer.createSlot()
+    // 		] );
+
+    // 		return writer.createContainerElement( 'div', { class: 'wrapper' }, [
+    // 			paragraphViewElement
+    // 		] );
+    // 	}
+    // } );
+
+    conversion.for('dataDowncast').elementToStructure({
       model: 'uwBootstrapAccordionButton',
-      view: {
-        name: 'button',
-        classes: ['btn', 'btn-link'],
+      view: (modelElement, conversionApi) => {
+        const { writer } = conversionApi;
+        const buttonViewElement = writer.createContainerElement(
+          'button',
+          { class: 'btn btn-link' },
+          [writer.createSlot()]
+        );
+
+        return writer.createContainerElement('h3', { class: 'mb-0' }, [
+          buttonViewElement,
+        ]);
+      },
+    });
+
+    // conversion.for('editingDowncast').elementToElement({
+    //   model: 'uwBootstrapAccordionButton',
+    //   view: {
+    //     name: 'h3',
+    //     classes: ['mb-0'],
+    //   },
+    // });
+
+    conversion.for('editingDowncast').elementToStructure({
+      model: 'uwBootstrapAccordionButton',
+      view: (modelElement, conversionApi) => {
+        const { writer } = conversionApi;
+        const buttonViewElement = writer.createContainerElement(
+          'button',
+          {
+            class: 'btn btn-link',
+          },
+          [writer.createSlot()]
+        );
+
+        return writer.createContainerElement('h3', { class: 'mb-0' }, [
+          buttonViewElement,
+        ]);
       },
     });
     // conversion.for('editingDowncast').elementToElement({

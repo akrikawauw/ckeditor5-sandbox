@@ -11,9 +11,20 @@ import {
   Locale,
   createDropdown,
   addListToDropdown,
+  LabeledFieldView,
+  createLabeledInputText,
+} from 'ckeditor5';
+import {
+  IconChevronDown,
+  IconChevronUp,
+  IconCode,
+  IconCheck,
+  IconRemoveComment,
 } from 'ckeditor5';
 import './css/accordion.css';
 import FormView from './uwbootstrapaccordionview.js';
+import UwBootstrapAccordionItemPropertiesView from './uwbootstrapaccordionitemproperties/uwbootstrapaccordionitempropertiesview.js';
+import { _getSelectedAccordionWidget } from './uwbootstrapaccordionutils.js';
 
 export default class UwBootstrapAccordionUI extends Plugin {
   static get requires() {
@@ -27,9 +38,6 @@ export default class UwBootstrapAccordionUI extends Plugin {
     // Create the balloon and the form view.
     this._balloon = this.editor.plugins.get(ContextualBalloon);
     this.formView = this._createFormView();
-
-    // Create the toolbar
-    this.toolbarView = this._createToolbarView();
 
     // TODO: break these out into build functions
     // Building the main uwBootstrapAccordion button
@@ -58,56 +66,41 @@ export default class UwBootstrapAccordionUI extends Plugin {
     editor.ui.componentFactory.add('uwBootstrapAccordionItem', (locale) => {
       const command = editor.commands.get('insertUwBootstrapAccordionItem');
 
-      const dropdownView = createDropdown(locale);
-      const buttonView = dropdownView.buttonView;
-      const list = new Collection();
-      const t = locale.t;
+      //Create the toolbar
+      const toolbarView = this._createToolbarView();
 
-      // Found that using model: new Model({}) didn't work.
-      list.add({
-        type: 'button',
-        model: {
-          command: command,
-          withText: true,
-          label: 'Insert item above',
-          id: 'insert-accordion-item',
-          options: { positionOffset: 'before' },
-        },
+      const dropdownView = this._createDropdownView(locale, command);
+      const itemFormView = UwBootstrapAccordionItemPropertiesView;
+
+      const button = new ButtonView();
+      button.set({ label: 'Button', withText: false, icon: IconRemoveComment });
+
+      this.listenTo(button, 'execute', () => {
+        // editor.execute('insertUwBootstrapAccordion');
+        itemFormView.render();
       });
-      list.add({
-        type: 'button',
-        model: {
-          command: command,
-          withText: true,
-          label: 'Insert item below',
-          id: 'insert-accordion-item',
-          options: { positionOffset: 'after' },
-        },
-      });
+      toolbarView.items.add(dropdownView);
 
-      addListToDropdown(dropdownView, list);
-
-      // This
-      dropdownView.on('execute', (eventInfo) => {
-        // console.log(event);
-        if (eventInfo.source.id === 'insert-accordion-item') {
-          // this.event.fire(command);
-          editor.execute(
-            'insertUwBootstrapAccordionItem',
-            eventInfo.source.options
-          );
-        }
-      });
-
-      buttonView.set({
-        label: t('Accordion item'),
-        tooltip: t('Accordion item'),
-        class: 'ck-dropdown__button_label-width_auto',
-        withText: true,
-      });
-
-      return dropdownView;
+      toolbarView.items.add(button);
+      return toolbarView;
     });
+
+    // Building the toolbar buttons
+    // editor.ui.componentFactory.add('uwBootstrapAccordionItem', (locale) => {
+    //   // const command = editor.commands.get('insertUwBootstrapAccordionItem');
+
+    //   // const dropdownView = createDropdown(locale);
+    //   // const buttonView = dropdownView.buttonView;
+    //   // const list = new Collection();
+    //   const t = locale.t;
+    //   const view = new ButtonView(locale);
+    //   view.set({ label: 'Button 2', icon: IconCheck, tooltip: true });
+    //   view.on('execute', () => {
+    //     // Logic for Button 2
+    //     console.log('Button 2 clicked!');
+    //   });
+    //   return view;
+    // });
   }
 
   afterInit() {
@@ -116,13 +109,14 @@ export default class UwBootstrapAccordionUI extends Plugin {
 
     widgetToolbarRepository.register('uwBootstrapAccordion', {
       items: config.get('uwBootstrapAccordion.toolbar'),
-      getRelatedElement: this._getSelectedAccordionWidget,
+      getRelatedElement: _getSelectedAccordionWidget,
     });
   }
 
   _createFormView() {
     const editor = this.editor;
     const formView = new FormView(editor.locale);
+    // const formView = new UwBootstrapAccordionItemPropertiesView(editor.locale);
 
     this.listenTo(formView, 'submit', () => {
       // Setting texts: title and abbreviation.
@@ -160,17 +154,66 @@ export default class UwBootstrapAccordionUI extends Plugin {
 
   _createToolbarView() {
     const editor = this.editor;
-
     const locale = new Locale();
+    const toolbarButton = new ToolbarView(locale);
+    return toolbarButton;
+  }
+
+  _createDropdownView(locale, command) {
+    const dropdownView = createDropdown(locale);
+    const buttonView = dropdownView.buttonView;
+    const list = new Collection();
+    const t = locale.t;
+
+    // Found that using model: new Model({}) didn't work.
+    list.add({
+      type: 'button',
+      model: {
+        command: command,
+        withText: true,
+        icon: IconChevronUp,
+        label: 'Insert item above',
+        id: 'insert-accordion-item',
+        options: { positionOffset: 'before' },
+      },
+    });
+    list.add({
+      type: 'button',
+      model: {
+        command: command,
+        withText: true,
+        icon: IconChevronDown,
+        label: 'Insert item below',
+        id: 'insert-accordion-item',
+        options: { positionOffset: 'after' },
+      },
+    });
+
+    addListToDropdown(dropdownView, list);
+
+    // This
+    dropdownView.on('execute', (eventInfo) => {
+      // console.log(event);
+      if (eventInfo.source.id === 'insert-accordion-item') {
+        // this.event.fire(command);
+        editor.execute(
+          'insertUwBootstrapAccordionItem',
+          eventInfo.source.options
+        );
+      }
+    });
 
     const button = new ButtonView();
-    button.set({ label: 'Button', withText: true });
+    button.set({ label: 'Button', withText: false, icon: IconRemoveComment });
 
-    const toolbarButton = new ToolbarView(locale);
-    toolbarButton.items.add(button);
-    toolbarButton.render();
-
-    return toolbarButton;
+    buttonView.set({
+      // label: t('Accordion item'),
+      icon: IconCode,
+      tooltip: t('Accordion item'),
+      class: 'ck-dropdown__button_label-width_auto',
+      withText: true,
+    });
+    return dropdownView;
   }
 
   _hideUI() {
@@ -201,6 +244,7 @@ export default class UwBootstrapAccordionUI extends Plugin {
   _showUI() {
     this._balloon.add({
       view: this.formView,
+      // view: this.UwBootstrapAccordionItemPropertiesView,
       position: this._getBalloonPositionData(),
     });
 

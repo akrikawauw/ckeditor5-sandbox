@@ -2,10 +2,15 @@
 
 import UwBootstrapAccordionEditing from './uwbootstrapaccordionediting';
 import UwBootstrapAccordionUI from './uwbootstrapaccordiondui';
+import UwBootstrapAccordionItemPropertiesUI from './uwbootstrapaccordionitemproperties/uwbootstrapaccordionitempropertiesui';
 import { Plugin } from 'ckeditor5';
 
 export default class UwBootstrapAccordion extends Plugin {
   static get requires() {
-    return [UwBootstrapAccordionEditing, UwBootstrapAccordionUI];
+    return [
+      UwBootstrapAccordionEditing,
+      UwBootstrapAccordionUI,
+      UwBootstrapAccordionItemPropertiesUI,
+    ];
   }
 }

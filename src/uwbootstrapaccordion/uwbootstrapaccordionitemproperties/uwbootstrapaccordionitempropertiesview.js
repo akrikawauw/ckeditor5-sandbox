@@ -22,12 +22,12 @@ export default class UwBootstrapAccordionItemPropertiesView extends View {
     // Collapsed/open default state switch.
     // Title for accordion button / heading.
 
-    this.idInputView = this._createInput('NEW Accordion ID');
-    this.titleInputView = this._createInput('NEW Accessible name');
+    this.idInputView = this._createInput('Accordion heading id');
+    this.titleInputView = this._createInput('Accordion collapse id');
 
     // Form header.
     this.formHeader = new FormHeaderView(locale, {
-      label: this.t('Cell properties'),
+      label: this.t('Accordion item properties'),
     });
 
     // Text alignment row.
@@ -68,16 +68,6 @@ export default class UwBootstrapAccordionItemPropertiesView extends View {
         tabindex: '-1',
       },
       children: this.childViews,
-    });
-  }
-
-  render() {
-    super.render();
-
-    // Submit the form when the user clicked the save button
-    // or pressed enter in the input.
-    submitHandler({
-      view: this,
     });
   }
 

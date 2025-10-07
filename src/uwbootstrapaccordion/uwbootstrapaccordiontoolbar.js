@@ -1,9 +1,9 @@
-import { Plugin } from 'ckeditor5/src/core.js';
-import { Widget, WidgetToolbarRepository } from 'ckeditor5/src/widget.js';
+import { Plugin } from 'ckeditor5';
+import { Widget, WidgetToolbarRepository } from 'ckeditor5';
 
 import { _getSelectedAccordionWidget } from './uwbootstrapaccordionutils.js';
 
-export class UwBootstrapAccordionToolbar extends Plugin {
+export default class UwBootstrapAccordionToolbar extends Plugin {
   /**
    * @inheritDoc
    */
@@ -24,17 +24,18 @@ export class UwBootstrapAccordionToolbar extends Plugin {
   afterInit() {
     const editor = this.editor;
     const t = editor.t;
+    const config = editor.config;
     const widgetToolbarRepository = editor.plugins.get(WidgetToolbarRepository);
 
     const uwBootstrapAccordionToolbarItems = editor.config.get(
-      'uwBootstrapAccordion.accordionItemToolbar'
+      'uwBootstrapAccordion.toolbar'
     );
 
     if (uwBootstrapAccordionToolbarItems) {
-      widgetToolbarRepository.register('uwBootstrapAccordion', {
+      widgetToolbarRepository.register('uwBootstrapAccordionItem', {
         ariaLabel: t('UW Bootstrap Accordion Item toolbar'),
-        items: uwBootstrapAccordionToolbarItems,
-        getRelatedElement: this._getSelectedAccordionWidget,
+        items: config.get('uwBootstrapAccordion.toolbar'),
+        getRelatedElement: _getSelectedAccordionWidget,
       });
     }
   }

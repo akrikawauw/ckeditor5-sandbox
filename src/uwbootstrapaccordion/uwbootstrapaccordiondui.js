@@ -13,8 +13,6 @@ import {
   addListToDropdown,
   LabeledFieldView,
   createLabeledInputText,
-} from 'ckeditor5';
-import {
   IconChevronDown,
   IconChevronUp,
   IconCode,
@@ -23,7 +21,7 @@ import {
 } from 'ckeditor5';
 import './css/accordion.css';
 import FormView from './uwbootstrapaccordionview.js';
-import UwBootstrapAccordionItemPropertiesView from './uwbootstrapaccordionitemproperties/uwbootstrapaccordionitempropertiesview.js';
+import UwBootstrapAccordionItemPropertiesUI from './uwbootstrapaccordionitemproperties/uwbootstrapaccordionitempropertiesui.js';
 import { _getSelectedAccordionWidget } from './uwbootstrapaccordionutils.js';
 
 export default class UwBootstrapAccordionUI extends Plugin {
@@ -63,6 +61,25 @@ export default class UwBootstrapAccordionUI extends Plugin {
     });
 
     // Building the toolbar buttons
+    // editor.ui.componentFactory.add(
+    //   'uwBootstrapAccordionItemProperties',
+    //   (locale) => {
+    //     const itemFormView = new UwBootstrapAccordionItemPropertiesUI(editor);
+    //     console.log(itemFormview);
+    //     const button = new ButtonView();
+    //     button.set({
+    //       label: 'Button',
+    //       withText: false,
+    //       icon: IconRemoveComment,
+    //     });
+
+    //     this.listenTo(button, 'execute', () => {
+    //       // editor.execute('insertUwBootstrapAccordion');
+    //       itemFormView.render();
+    //     });
+    //   }
+    // );
+
     editor.ui.componentFactory.add('uwBootstrapAccordionItem', (locale) => {
       const command = editor.commands.get('insertUwBootstrapAccordionItem');
 
@@ -70,47 +87,21 @@ export default class UwBootstrapAccordionUI extends Plugin {
       const toolbarView = this._createToolbarView();
 
       const dropdownView = this._createDropdownView(locale, command);
-      const itemFormView = UwBootstrapAccordionItemPropertiesView;
 
-      const button = new ButtonView();
-      button.set({ label: 'Button', withText: false, icon: IconRemoveComment });
-
-      this.listenTo(button, 'execute', () => {
-        // editor.execute('insertUwBootstrapAccordion');
-        itemFormView.render();
-      });
       toolbarView.items.add(dropdownView);
 
-      toolbarView.items.add(button);
+      // toolbarView.items.add(button);
       return toolbarView;
     });
-
-    // Building the toolbar buttons
-    // editor.ui.componentFactory.add('uwBootstrapAccordionItem', (locale) => {
-    //   // const command = editor.commands.get('insertUwBootstrapAccordionItem');
-
-    //   // const dropdownView = createDropdown(locale);
-    //   // const buttonView = dropdownView.buttonView;
-    //   // const list = new Collection();
-    //   const t = locale.t;
-    //   const view = new ButtonView(locale);
-    //   view.set({ label: 'Button 2', icon: IconCheck, tooltip: true });
-    //   view.on('execute', () => {
-    //     // Logic for Button 2
-    //     console.log('Button 2 clicked!');
-    //   });
-    //   return view;
-    // });
   }
 
   afterInit() {
-    const { config, plugins } = this.editor;
-    const widgetToolbarRepository = plugins.get(WidgetToolbarRepository);
-
-    widgetToolbarRepository.register('uwBootstrapAccordion', {
-      items: config.get('uwBootstrapAccordion.toolbar'),
-      getRelatedElement: _getSelectedAccordionWidget,
-    });
+    // const { config, plugins } = this.editor;
+    // const widgetToolbarRepository = plugins.get(WidgetToolbarRepository);
+    // widgetToolbarRepository.register('uwBootstrapAccordionItem', {
+    //   items: config.get('uwBootstrapAccordion.toolbar'),
+    //   getRelatedElement: _getSelectedAccordionWidget,
+    // });
   }
 
   _createFormView() {
@@ -249,25 +240,5 @@ export default class UwBootstrapAccordionUI extends Plugin {
     });
 
     this.formView.focus();
-  }
-
-  // Callback which returns an element the toolbar should be attached to.
-  _getSelectedAccordionWidget(selection) {
-    // if (this.editor.ui.focusTracker.isFocused) {
-    const selectionFocus = selection.focus;
-    // console.log(selection.focus);
-    if (selectionFocus !== null) {
-      // console.log('im trying');
-      const accordion = selectionFocus
-        .getAncestors()
-        .reverse()
-        // TODO: build a helper function that determines if we're inside an accordion.
-        .find((node) => node.name == 'div' && node.hasClass('accordion'));
-      // .find((node) => node == 'element' && this._isAccordionWidget(node));
-      // console.log('type', accordion);
-      return accordion;
-      // return accordion.is('element') ? accordion : null;
-    }
-    return null;
   }
 }

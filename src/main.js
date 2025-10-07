@@ -6,6 +6,10 @@ import {
   Paragraph,
   Heading,
   List,
+  Table,
+  TableToolbar,
+  TableCellProperties,
+  TableProperties,
   Bold,
   Italic,
   GeneralHtmlSupport,
@@ -19,6 +23,7 @@ import CKEditorInspector from '@ckeditor/ckeditor5-inspector';
 import 'ckeditor5/ckeditor5.css';
 import SimpleBox from './simplebox/simplebox';
 import UwBootstrapAccordion from './uwbootstrapaccordion/uwbootstrapaccordion';
+import UwBootstrapAccordionToolbar from './uwbootstrapaccordion/uwbootstrapaccordiontoolbar';
 import JustAButton from './justabutton/justabutton';
 
 // Get the HTML element with the ID of 'app'.
@@ -36,8 +41,13 @@ const editor = await ClassicEditor.create(element, {
     List,
     Bold,
     Italic,
+    Table,
+    TableToolbar,
+    TableProperties,
+    TableCellProperties,
     SimpleBox,
     UwBootstrapAccordion,
+    UwBootstrapAccordionToolbar,
     JustAButton,
     GeneralHtmlSupport,
     SourceEditing,
@@ -72,9 +82,7 @@ const editor = await ClassicEditor.create(element, {
       },
     ],
   },
-  uwBootstrapAccordion: {
-    toolbar: ['uwBootstrapAccordionItem'],
-  },
+
   // Add the toolbar configuration.
   toolbar: [
     'heading',
@@ -83,10 +91,23 @@ const editor = await ClassicEditor.create(element, {
     'numberedList',
     'bulletedList',
     'simpleBox',
+    'insertTable',
     'uwBootstrapAccordion',
     'justAButton',
     'sourceEditing',
   ],
+  uwBootstrapAccordion: {
+    toolbar: ['uwBootstrapAccordionItem', 'accordionItemProperties'],
+  },
+  table: {
+    contentToolbar: [
+      'tableColumn',
+      'tableRow',
+      'mergeTableCells',
+      'tableProperties',
+      'tableCellProperties',
+    ],
+  },
 })
   .then((editor) => {
     CKEditorInspector.attach(editor);

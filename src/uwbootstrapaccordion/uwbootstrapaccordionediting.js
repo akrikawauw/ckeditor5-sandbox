@@ -5,6 +5,7 @@ import { Plugin, Widget, toWidget, toWidgetEditable } from 'ckeditor5';
 // import { uid } from 'ckeditor5/src/utils';
 import { InsertUwBootstrapAccordionCommand } from './insertuwbootstrapaccordioncommand';
 import { InsertUwBootstrapAccordionItemCommand } from './insertuwbootstrapaccordionitemcommand';
+import { UwBootstrapAccordionPropertiesCommand } from './uwbootstrapaccordionproperties/uwbootstrapaccordionpropertiescommand';
 
 export default class UwBootstrapAccordionEditing extends Plugin {
   static get requires() {
@@ -25,6 +26,11 @@ export default class UwBootstrapAccordionEditing extends Plugin {
     this.editor.commands.add(
       'insertUwBootstrapAccordionItem',
       new InsertUwBootstrapAccordionItemCommand(this.editor)
+    );
+
+    this.editor.commands.add(
+      'uwBootstrapAccordionProperties',
+      new UwBootstrapAccordionPropertiesCommand(this.editor)
     );
   }
   /*
@@ -235,10 +241,11 @@ export default class UwBootstrapAccordionEditing extends Plugin {
       model: 'uwBootstrapAccordion',
       view: (modelElement, { writer: viewWriter }) => {
         const div = viewWriter.createContainerElement('div', {
-          class: 'accordion',
+          class: 'accordion ckeditor5-uw-bootstrap-accordion__widget',
         });
         return toWidget(div, viewWriter, {
           label: 'UW bootstrap accordion widget',
+          hasSelectionHandle: true,
         });
       },
     });

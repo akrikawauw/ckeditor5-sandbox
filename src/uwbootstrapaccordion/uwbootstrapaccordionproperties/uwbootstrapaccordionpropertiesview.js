@@ -13,7 +13,7 @@ import {
   submitHandler,
 } from 'ckeditor5';
 
-export default class UwBootstrapAccordionItemPropertiesView extends View {
+export default class UwBootstrapAccordionPropertiesView extends View {
   constructor(locale) {
     super(locale);
 
@@ -23,28 +23,22 @@ export default class UwBootstrapAccordionItemPropertiesView extends View {
     // Collapsed/open default state switch.
     // Title for accordion button / heading.
 
-    this.idInputView = this._createInputText('Accordion heading id');
-    this.titleInputView = this._createInputText('Accordion collapse id');
-    this.accordionHeader = this._createInputTextArea('Accordion button title');
+    // this.idInputView = this._createInputText('Accordion heading id');
+    // this.titleInputView = this._createInputText('Accordion collapse id');
+    // this.accordionHeader = this._createInputTextArea('Accordion button title');
+
+    const defaultValues = {
+      idInputView: 'fdsa123',
+      titleInputView: 'this is needed for screen readers',
+    };
+
+    this.idInputView = this._createIdInput();
+    this.accessibleTitleInput = this._createAccessibleTitleInput();
 
     // Form header.
     this.formHeader = new FormHeaderView(locale, {
-      label: this.t('Accordion item properties'),
+      label: this.t('Accordion properties'),
       class: 'ck ck-form__header',
-    });
-
-    // Text alignment row.
-    this.myRow = new FormRowView(locale, {
-      labelView: 'label is here',
-      children: [this.idInputView, this.titleInputView],
-      class: 'ck ck-form__row',
-    });
-
-    // Text alignment row.
-    this.myAccordionButton = new FormRowView(locale, {
-      labelView: 'label is here',
-      children: [this.accordionHeader],
-      class: 'ck ck-form__row',
     });
 
     // Create the save and cancel buttons.
@@ -66,7 +60,7 @@ export default class UwBootstrapAccordionItemPropertiesView extends View {
     // Action row.
     this.actionRow = new FormRowView(locale, {
       children: [this.saveButtonView, this.cancelButtonView],
-      class: 'ck-accordion-item-proerties-form__action-row',
+      class: 'ck-accordion--properties-form__action-row',
     });
 
     // Delegate ButtonView#execute to FormView#cancel.
@@ -74,20 +68,28 @@ export default class UwBootstrapAccordionItemPropertiesView extends View {
 
     this.childViews = this.createCollection([
       this.formHeader,
-      this.myAccordionButton,
-      this.myRow,
-      // this.idInputView,
-      // this.titleInputView,
+      this.idInputView,
+      this.accessibleTitleInput,
       this.actionRow,
     ]);
 
     this.setTemplate({
       tag: 'form',
       attributes: {
-        class: ['ck', 'ck-accordion-form', 'ck-accortion-item-properties-form'],
+        class: ['ck', 'ck-accordion-form', 'ck-accordion--properties-form'],
         tabindex: '-1',
       },
       children: this.childViews,
+    });
+  }
+
+  render() {
+    super.render();
+
+    // Submit the form when the user clicked the save button
+    // or pressed enter in the input.
+    submitHandler({
+      view: this,
     });
   }
 
@@ -95,21 +97,32 @@ export default class UwBootstrapAccordionItemPropertiesView extends View {
     this.childViews.first.focus();
   }
 
-  _createInputText(label) {
+  _createIdInput() {
+    const t = this.locale.t;
     const labeledInput = new LabeledFieldView(
       this.locale,
       createLabeledInputText
     );
-    labeledInput.label = label;
+
+    labeledInput.label = t('Accordion ID');
+    labeledInput.class = 'ck-labeled-field-view_full-width';
+    labeledInput.fieldView.bind('value').to(this, 'id');
+    labeledInput.fieldView.on('input', () => {
+      this.id = labeledInput.fieldView.element.value;
+    });
     return labeledInput;
   }
 
-  _createInputTextArea(label) {
+  _createAccessibleTitleInput() {
+    const t = this.locale.t;
     const labeledInput = new LabeledFieldView(
       this.locale,
-      createLabeledTextarea
+      createLabeledInputText
     );
-    labeledInput.label = label;
+
+    labeledInput.label = t('Accessible name');
+    labeledInput.class = 'ck-labeled-field-view_full-width';
+
     return labeledInput;
   }
 

@@ -18,10 +18,7 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
   constructor(editor) {
     super(editor);
 
-    editor.config.define('uwBootstrapAccordion.accordionItemProperties', {
-      // borderColors: defaultColors,
-      // backgroundColors: defaultColors,
-    });
+    editor.config.define('uwBootstrapAccordion.accordionItemProperties', {});
   }
 
   /**
@@ -29,14 +26,6 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
    */
   init() {
     const editor = this.editor;
-    console.log('this initialized');
-    // this._defaultContentTableProperties = getNormalizedDefaultTableProperties(
-    // 	editor.config.get( 'table.tableProperties.defaultProperties' )!,
-    // 	{
-    // 		includeAlignmentProperty: true
-    // 	}
-    // );
-    // this._defaultLayoutTableProperties = getNormalizedDefaultProperties();
 
     this._balloon = editor.plugins.get(ContextualBalloon);
 
@@ -63,16 +52,6 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
     });
 
     this.listenTo(view, 'execute', () => this._showView());
-
-    // const commands = Object.values(propertyToCommandMap).map((commandName) =>
-    //   editor.commands.get(commandName)
-    // );
-
-    // view
-    //   .bind('isEnabled')
-    //   .toMany(commands, 'isEnabled', (...areEnabled) =>
-    //     areEnabled.some((isCommandEnabled) => isCommandEnabled)
-    //   );
 
     return view;
   }
@@ -112,12 +91,6 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
       this._hideView();
     });
 
-    // Close the balloon on Esc key press.
-    // view.keystrokes.set('Esc', (data, cancel) => {
-    //   this._hideView();
-    //   cancel();
-    // });
-
     // Close on click outside of balloon panel element.
     clickOutsideHandler({
       emitter: view,
@@ -126,15 +99,13 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
       callback: () => this._hideView(),
     });
 
-    // view.on(
-    //   'change:cardHeaderId',
-    //   this._getValidatedPropertyChangeCallback({
-    //     viewField: view.cardHeaderId,
-    //     commandName: 'cardHeaderId',
-    //     errorText: lengthErrorText,
-    //     validator: lengthFieldValidator,
-    //   })
-    // );
+    view.on(
+      'change:accordionHeader',
+      this._getPropertyChangeCallback({
+        viewField: view.accordionHeader,
+        commandName: 'accordionHeaderChange',
+      })
+    );
 
     return view;
   }
@@ -145,36 +116,17 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
     const viewAccordionItem = _getSelectedAccordionWidget(
       editor.editing.view.document.selection
     );
-    // const modelTable = viewTable && editor.editing.mapper.toModelElement( viewTable );
 
-    // if (useDefaults && !this._viewWithContentTableDefaults) {
-    //   this._viewWithContentTableDefaults = this._createPropertiesView(
-    //     this._defaultContentTableProperties
-    //   );
-    // } else if (!useDefaults && !this._viewWithLayoutTableDefaults) {
-    //   this._viewWithLayoutTableDefaults = this._createPropertiesView(
-    //     this._defaultLayoutTableProperties
-    //   );
-    // }
     this.view = this._createAccordionItemPropertiesView();
 
     this.listenTo(editor.ui, 'update', () => {
       this._updateView();
     });
 
-    // Update the view with the model values.
-    // this._fillViewFormFromCommandValues();
-
     this._balloon.add({
       view: this.view,
       position: this._getBalloonPositionData(),
     });
-
-    // Create a new batch. Clicking "Cancel" will undo this batch.
-    // this._undoStepBatch = editor.model.createBatch();
-
-    // Basic a11y.
-    // this.view.focus();
   }
 
   _getBalloonPositionData() {
@@ -203,7 +155,7 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
 
     // Blur any input element before removing it from DOM to prevent issues in some browsers.
     // See https://github.com/ckeditor/ckeditor5/issues/1501.
-    this.view.saveButtonView.focus();
+    // this.view.saveButtonView.focus();
 
     this._balloon.remove(this.view);
 
@@ -224,5 +176,26 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
     } else if (this._isViewVisible) {
       repositionContextualBalloon(editor, 'uwBootstrapAccordionItem');
     }
+  }
+
+  /**
+   * Creates a callback that when executed upon {@link #view view's} property change
+   * executes a related editor command with the new property value.
+   *
+   * If new value will be set to the default value, the command will not be executed.
+   *
+   * @param commandName The command that will be executed.
+   */
+  _getPropertyChangeCallback(commandName) {
+    return (EventInfo, propertyName, newValue) => {
+      // Do not execute the command on initial call (opening the table properties view).
+      if (this._isReady) {
+        return;
+      }
+
+      this.editor.execute(commandName, {
+        value: newValue,
+      });
+    };
   }
 }

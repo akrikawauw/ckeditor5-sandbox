@@ -97,7 +97,11 @@ const editor = await ClassicEditor.create(element, {
     'sourceEditing',
   ],
   uwBootstrapAccordion: {
-    toolbar: ['uwBootstrapAccordionItem', 'accordionItemProperties'],
+    toolbar: [
+      'uwBootstrapAccordionItem',
+      'accordionItemProperties',
+      'accordionProperties',
+    ],
   },
   table: {
     contentToolbar: [

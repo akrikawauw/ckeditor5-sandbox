@@ -124,3 +124,21 @@
 .ck.ck-abbr-form .ck-button:nth-of-type(2) {
   grid-area: 3 / 2 / 4 / 3;
 }
+
+.ck.ck-accordion-form.ck-accordion--properties-form {
+  padding: 1em;
+
+}
+.ck.ck-accordion-item-properties-form {
+	& .ck-form__row {
+		&.ck-accordion-item-properties-form__alignment-row {
+			flex-wrap: wrap;
+			flex-basis: 0;
+			align-content: baseline;
+
+			& .ck.ck-toolbar .ck-toolbar__items {
+				flex-wrap: nowrap;
+			}
+		}
+	}
+}

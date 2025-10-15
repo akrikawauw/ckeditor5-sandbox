@@ -32,7 +32,7 @@ export default class UwBootstrapAccordionToolbar extends Plugin {
     );
 
     if (uwBootstrapAccordionToolbarItems) {
-      widgetToolbarRepository.register('uwBootstrapAccordionItem', {
+      widgetToolbarRepository.register('uwBootstrapAccordion', {
         ariaLabel: t('UW Bootstrap Accordion Item toolbar'),
         items: config.get('uwBootstrapAccordion.toolbar'),
         getRelatedElement: _getSelectedAccordionWidget,

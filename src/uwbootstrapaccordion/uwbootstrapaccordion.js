@@ -3,6 +3,7 @@
 import UwBootstrapAccordionEditing from './uwbootstrapaccordionediting';
 import UwBootstrapAccordionUI from './uwbootstrapaccordiondui';
 import UwBootstrapAccordionItemPropertiesUI from './uwbootstrapaccordionitemproperties/uwbootstrapaccordionitempropertiesui';
+import UwBootstrapAccordionPropertiesUI from './uwbootstrapaccordionproperties/uwbootstrapaccordionpropertiesui';
 import { Plugin } from 'ckeditor5';
 
 export default class UwBootstrapAccordion extends Plugin {
@@ -10,6 +11,7 @@ export default class UwBootstrapAccordion extends Plugin {
     return [
       UwBootstrapAccordionEditing,
       UwBootstrapAccordionUI,
+      UwBootstrapAccordionPropertiesUI,
       UwBootstrapAccordionItemPropertiesUI,
     ];
   }

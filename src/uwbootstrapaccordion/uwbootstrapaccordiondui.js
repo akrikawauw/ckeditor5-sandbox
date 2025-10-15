@@ -22,7 +22,10 @@ import {
 import './css/accordion.css';
 import FormView from './uwbootstrapaccordionview.js';
 import UwBootstrapAccordionItemPropertiesUI from './uwbootstrapaccordionitemproperties/uwbootstrapaccordionitempropertiesui.js';
-import { _getSelectedAccordionWidget } from './uwbootstrapaccordionutils.js';
+import {
+  _getSelectedAccordionWidget,
+  _getSelectedAccordionModelElement,
+} from './uwbootstrapaccordionutils.js';
 
 export default class UwBootstrapAccordionUI extends Plugin {
   static get requires() {
@@ -112,15 +115,21 @@ export default class UwBootstrapAccordionUI extends Plugin {
     this.listenTo(formView, 'submit', () => {
       // Setting texts: title and abbreviation.
       // ...
-      const title = formView.titleInputView.fieldView.element.value;
+      const title = formView.accessibleTitleInput.fieldView.element.value;
       const id = formView.idInputView.fieldView.element.value;
 
+      // Write the field data to the model
       editor.model.change((writer) => {
         const selection = editor.model.document.selection;
         const selectedElement = selection.getSelectedElement();
         // const foundElement; // todo, figure out how to find the accordion element
+        // write a function for this _getSelectedAccordionAccessibleTitle
+
         if (selectedElement && id) {
           writer.setAttribute('id', id, selectedElement);
+        }
+        if (selectedElement && title) {
+          this._changeViewContent(title, selection);
         }
       });
 
@@ -141,6 +150,28 @@ export default class UwBootstrapAccordionUI extends Plugin {
       callback: () => this._hideUI(),
     });
     return formView;
+  }
+
+  _changeViewContent(incomingText, modelElement) {
+    const model = this.editor.model;
+    // const conversion = editor.conversion;
+
+    // schema.extend('uwBootstrapAccordion', {
+    //   allowAttributes: 'data-accessible-title',
+    // });
+
+    // const referencePoint = this._getSelectedAccordionAccessibleTitleText();
+    const referencePoint = _getSelectedAccordionModelElement(
+      model,
+      'uwBootstrapAccordionAccessibleTitle'
+    );
+    console.log(referencePoint);
+
+    model.change((writer) => {
+      const range = writer.createRangeIn(referencePoint);
+      writer.insertText(incomingText, referencePoint, 'end');
+      writer.remove(range);
+    });
   }
 
   _createToolbarView() {
@@ -208,8 +239,6 @@ export default class UwBootstrapAccordionUI extends Plugin {
   }
 
   _hideUI() {
-    this.formView.idInputView.fieldView.value = '';
-    this.formView.titleInputView.fieldView.value = '';
     this.formView.element.reset();
 
     this._balloon.remove(this.formView);
@@ -240,5 +269,33 @@ export default class UwBootstrapAccordionUI extends Plugin {
     });
 
     this.formView.focus();
+  }
+
+  /**
+   * Returns selected link text content.
+   * If link is not selected it returns the selected text.
+   * If selection or link includes non text node (inline object or block) then returns undefined.
+   */
+  _getSelectedAccordionAccessibleTitleText() {
+    // TODO: write this
+    const model = this.editor.model;
+
+    const selection = model.document.selection;
+    const foundElements = [];
+
+    for (const range of selection.getRanges()) {
+      for (const item of range.getItems()) {
+        if (
+          // item.is('element')
+          item.is('element') &&
+          item.name === 'uwBootstrapAccordionAccessibleTitle'
+        ) {
+          foundElements.push(item);
+        }
+      }
+    }
+    console.log('foundElements', foundElements[0]);
+
+    return foundElements[0];
   }
 }

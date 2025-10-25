@@ -10,7 +10,7 @@ export default class JustAButtonEditing extends Plugin {
   }
 
   init() {
-    console.log('JustAButtonEditing#init() got called');
+    // console.log('JustAButtonEditing#init() got called');
 
     this._defineSchema();
     this._defineConverters();
@@ -42,7 +42,13 @@ export default class JustAButtonEditing extends Plugin {
 
       // allowContentOf: '$block', // This or something like it is key.
       // allowChildren: '$text'
-      allowAttributes: ['buttonType', 'buttonDataToggle', 'buttonDataTarget', 'buttonAriaExpanded', 'buttonAriaControls'],
+      allowAttributes: [
+        'buttonType',
+        'buttonDataToggle',
+        'buttonDataTarget',
+        'buttonAriaExpanded',
+        'buttonAriaControls',
+      ],
       // allowAttributes: ['type', 'data-toggle', 'data-target', 'aria-expanded', 'aria-controls']
     });
 
@@ -77,22 +83,22 @@ export default class JustAButtonEditing extends Plugin {
       model: 'buttonType',
       view: 'type',
     });
-    conversion.attributeToAttribute( {
+    conversion.attributeToAttribute({
       model: 'buttonDataToggle',
       view: 'data-toggle',
-    })
-    conversion.attributeToAttribute( {
+    });
+    conversion.attributeToAttribute({
       model: 'buttonDataTarget',
       view: 'data-target',
-    })
-    conversion.attributeToAttribute( {
+    });
+    conversion.attributeToAttribute({
       model: 'buttonAriaExpanded',
       view: 'aria-expanded',
-    })
-    conversion.attributeToAttribute( {
+    });
+    conversion.attributeToAttribute({
       model: 'buttonAriaControls',
       view: 'aria-controls',
-    })
+    });
 
     // <justAButton> converters
     conversion.for('upcast').elementToElement({
@@ -102,18 +108,18 @@ export default class JustAButtonEditing extends Plugin {
         classes: 'btn btn-link',
       },
     });
-      // model: ( viewElement, { writer } ) => {
-      //   console.log('upcast for justAButton', viewElement.getChildren());
-      //   const buttonType = viewElement.getAttribute('type');
-      //   const buttonDataToggle = viewElement.getAttribute('data-toggle');
-      //   const buttonDataTarget = viewElement.getAttribute('data-target');
-      //   const buttonAriaExpanded = viewElement.getAttribute('aria-expanded');
-      //   const buttonAriaControls = viewElement.getAttribute('aria-controls')
-      //
-      //   return writer.createElement('justAButton', {buttonType, buttonDataToggle, buttonDataTarget, buttonAriaExpanded, buttonAriaControls})
-      // },
-      // converterPriority: 'highest',
-    conversion.for('editingDowncast').elementToElement( {
+    // model: ( viewElement, { writer } ) => {
+    //   console.log('upcast for justAButton', viewElement.getChildren());
+    //   const buttonType = viewElement.getAttribute('type');
+    //   const buttonDataToggle = viewElement.getAttribute('data-toggle');
+    //   const buttonDataTarget = viewElement.getAttribute('data-target');
+    //   const buttonAriaExpanded = viewElement.getAttribute('aria-expanded');
+    //   const buttonAriaControls = viewElement.getAttribute('aria-controls')
+    //
+    //   return writer.createElement('justAButton', {buttonType, buttonDataToggle, buttonDataTarget, buttonAriaExpanded, buttonAriaControls})
+    // },
+    // converterPriority: 'highest',
+    conversion.for('editingDowncast').elementToElement({
       model: 'justAButton',
       view: {
         name: 'button',
@@ -128,12 +134,12 @@ export default class JustAButtonEditing extends Plugin {
       //   const widget = toWidgetEditable(element, writer, { label: 'Button header whatnot'});
       //   return widget;
       // }
-    })
+    });
 
     conversion.for('dataDowncast').elementToElement({
       model: {
         name: 'justAButton',
-        attributes: ['buttonType']
+        attributes: ['buttonType'],
       },
       view: {
         name: 'button',
@@ -155,10 +161,10 @@ export default class JustAButtonEditing extends Plugin {
     // <justAButtonText> converters
     conversion.for('upcast').elementToElement({
       // model: 'justAButtonText',
-      model: ( viewElement, { writer } ) => {
+      model: (viewElement, { writer }) => {
         const textClasses = viewElement.getAttribute('class');
         // console.log('upcast for justAButtonText', viewElement);
-        return writer.createElement('justAButtonText', {textClasses});
+        return writer.createElement('justAButtonText', { textClasses });
       },
       view: {
         name: 'span',

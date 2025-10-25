@@ -15,15 +15,11 @@ export default class FormView extends View {
     super(locale);
 
     // Get default values from view or model. Need to figure this out.
-    const defaultValues = {
-      idInputView: 'fdsa123',
-      titleInputView: 'this is needed for screen readers',
-    };
 
     this.idInputView = this._createIdInput();
     this.accessibleTitleInput = this._createAccessibleTitleInput();
 
-    console.log('idInputView', this.idInputView);
+    // console.log('idInputView', this.idInputView);
     // Create the save and cancel buttons.
     this.saveButtonView = this._createButton(
       'Save',

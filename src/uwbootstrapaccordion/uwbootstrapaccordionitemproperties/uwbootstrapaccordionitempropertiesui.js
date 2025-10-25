@@ -99,23 +99,15 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
       callback: () => this._hideView(),
     });
 
-    view.on(
-      'change:accordionHeader',
-      this._getPropertyChangeCallback({
-        viewField: view.accordionHeader,
-        commandName: 'accordionHeaderChange',
-      })
-    );
-
     return view;
   }
 
   _showView() {
     const editor = this.editor;
 
-    const viewAccordionItem = _getSelectedAccordionWidget(
-      editor.editing.view.document.selection
-    );
+    // const viewAccordionItem = _getSelectedAccordionWidget(
+    //   editor.editing.view.document.selection
+    // );
 
     this.view = this._createAccordionItemPropertiesView();
 
@@ -186,16 +178,16 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
    *
    * @param commandName The command that will be executed.
    */
-  _getPropertyChangeCallback(commandName) {
-    return (EventInfo, propertyName, newValue) => {
-      // Do not execute the command on initial call (opening the table properties view).
-      if (this._isReady) {
-        return;
-      }
+  // _getPropertyChangeCallback(commandName) {
+  //   return (EventInfo, propertyName, newValue) => {
+  //     // Do not execute the command on initial call (opening the table properties view).
+  //     if (this._isReady) {
+  //       return;
+  //     }
 
-      this.editor.execute(commandName, {
-        value: newValue,
-      });
-    };
-  }
+  //     this.editor.execute(commandName, {
+  //       value: newValue,
+  //     });
+  //   };
+  // }
 }

@@ -1,13 +1,21 @@
-import { Command } from 'ckeditor5';
+import { Command, uid } from 'ckeditor5';
 
 import { createBootstrapAccordionItem } from './insertuwbootstrapaccordionitemcommand';
 
 export class InsertUwBootstrapAccordionCommand extends Command {
-  execute() {
+  execute(values) {
     this.editor.model.change((writer) => {
-      // Inster <bootstrapAccordion>*</bootstrapAccordion> at the current selection position
+      // Insert <uwBootstrapAccordion>*</uwBootstrapAccordion> at the current selection position
       // in a way that will result in creating a valid model structure.
       this.editor.model.insertContent(createBootstrapAccordion(writer));
+      this.editor.editing.view.focus();
+      const viewElement = this.editor.model.document.selection
+        .getSelectedElement()
+        .getChild(0)
+        .getChild(0);
+      console.log(viewElement);
+      // this.editor.editing.view.focus();
+      this.editor.editing.view.document.selection._setFocus(viewElement, 0);
     });
   }
 
@@ -24,7 +32,9 @@ export class InsertUwBootstrapAccordionCommand extends Command {
 }
 
 export const createBootstrapAccordion = (writer) => {
-  const bootstrapAccordion = writer.createElement('uwBootstrapAccordion');
+  const bootstrapAccordion = writer.createElement('uwBootstrapAccordion', {
+    id: uid(),
+  });
   const bootstrapAccordionAccessibleTitle = writer.createElement(
     'uwBootstrapAccordionAccessibleTitle'
   );

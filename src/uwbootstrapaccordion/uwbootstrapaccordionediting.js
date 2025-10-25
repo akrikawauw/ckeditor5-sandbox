@@ -1,6 +1,6 @@
 // Bootstrap docs: https://getbootstrap.com/docs/4.1/components/collapse/#accordion-example
 
-import { Plugin, Widget, toWidget, toWidgetEditable } from 'ckeditor5';
+import { Plugin, Widget, toWidget, toWidgetEditable, uid } from 'ckeditor5';
 
 // import { uid } from 'ckeditor5/src/utils';
 import { InsertUwBootstrapAccordionCommand } from './insertuwbootstrapaccordioncommand';
@@ -179,10 +179,6 @@ export default class UwBootstrapAccordionEditing extends Plugin {
     const conversion = this.editor.conversion;
 
     conversion.attributeToAttribute({
-      model: 'uwBootstrapAccordionId',
-      view: 'id',
-    });
-    conversion.attributeToAttribute({
       model: 'buttonType',
       view: 'type',
     });
@@ -221,7 +217,7 @@ export default class UwBootstrapAccordionEditing extends Plugin {
           consumable.consume(viewItem, { name: true, classes: 'accordion' })
         ) {
           const modelElement = writer.createElement('uwBootstrapAccordion', {
-            uwBootstrapAccordionId: viewItem.getAttribute('id') || uid(),
+            id: viewItem.getAttribute('id') || uid(),
           });
           if (safeInsert(modelElement, data.modelCursor)) {
             convertChildren(viewItem, modelElement);
@@ -242,6 +238,7 @@ export default class UwBootstrapAccordionEditing extends Plugin {
       view: (modelElement, { writer: viewWriter }) => {
         const div = viewWriter.createContainerElement('div', {
           class: 'accordion ckeditor5-uw-bootstrap-accordion__widget',
+          id: modelElement.getAttribute('id'), // Map model attribute to data attribute
         });
         return toWidget(div, viewWriter, {
           label: 'UW bootstrap accordion widget',

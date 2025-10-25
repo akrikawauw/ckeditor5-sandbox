@@ -57,7 +57,6 @@ export default class UwBootstrapAccordionUI extends Plugin {
 
       this.listenTo(buttonView, 'execute', () => {
         editor.execute('insertUwBootstrapAccordion');
-        this._showUI();
       });
 
       return buttonView;

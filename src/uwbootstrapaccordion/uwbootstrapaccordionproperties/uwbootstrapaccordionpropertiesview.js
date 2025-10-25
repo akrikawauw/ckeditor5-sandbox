@@ -16,24 +16,17 @@ import {
 export default class UwBootstrapAccordionPropertiesView extends View {
   constructor(locale) {
     super(locale);
-
-    // What we need.
-    // Id for accordion heading.
-    // Id for accordion collapse.
-    // Collapsed/open default state switch.
-    // Title for accordion button / heading.
-
-    // this.idInputView = this._createInputText('Accordion heading id');
-    // this.titleInputView = this._createInputText('Accordion collapse id');
-    // this.accordionHeader = this._createInputTextArea('Accordion button title');
-
-    const defaultValues = {
-      idInputView: 'fdsa123',
-      titleInputView: 'this is needed for screen readers',
-    };
+    // console.log('type of idInputViewIncoming', typeof idInputViewIncoming);
+    // console.log('type of other field', typeof accessibleTitleInputIncoming);
+    // this.idInputViewIncoming = idInputViewIncoming;
+    // this.accessibleTitleInputIncoming = accessibleTitleInputIncoming;
 
     this.idInputView = this._createIdInput();
     this.accessibleTitleInput = this._createAccessibleTitleInput();
+
+    // console.log('SDFDSAFDSFS', this.accessibleTitleInput);
+    // this.idInputView.fieldView.value = idInputViewIncoming;
+    // this.accessibleTitleInput.fieldView.value = accessibleTitleInputIncoming;
 
     // Form header.
     this.formHeader = new FormHeaderView(locale, {
@@ -51,6 +44,8 @@ export default class UwBootstrapAccordionPropertiesView extends View {
     // Set the type to 'submit', which will trigger
     // the submit event on entire form when clicked.
     this.saveButtonView.type = 'submit';
+
+    // this.listenTo(view, 'submit', () => {});
     this.cancelButtonView = this._createButton(
       'Cancel',
       IconCancel,
@@ -106,10 +101,13 @@ export default class UwBootstrapAccordionPropertiesView extends View {
 
     labeledInput.label = t('Accordion ID');
     labeledInput.class = 'ck-labeled-field-view_full-width';
-    labeledInput.fieldView.bind('value').to(this, 'id');
-    labeledInput.fieldView.on('input', () => {
-      this.id = labeledInput.fieldView.element.value;
-    });
+
+    labeledInput.fieldView.bind('value').to(this, 'idInputView');
+    // labeledInput.fieldView.on('input', () => {
+    //   console.log('on input event idInputView');
+    //   this.idInputView = labeledInput.fieldView.element.value;
+    // });
+
     return labeledInput;
   }
 
@@ -122,6 +120,16 @@ export default class UwBootstrapAccordionPropertiesView extends View {
 
     labeledInput.label = t('Accessible name');
     labeledInput.class = 'ck-labeled-field-view_full-width';
+
+    // labeledInput.fieldView.bind('value').to(this, 'accessibleTitleInput');
+    // labeledInput.fieldView.on('input', () => {
+    //   this.accessibleTitleInput = labeledInput.fieldView.element.value;
+    //   console.log(
+    //     'on input event accessibleTitleInput',
+    //     this.accessibleTitleInput
+    //   );
+    // });
+    console.log(labeledInput.value);
 
     return labeledInput;
   }

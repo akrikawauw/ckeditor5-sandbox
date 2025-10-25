@@ -1,13 +1,9 @@
-import { BalloonPanelView } from 'ckeditor5';
+import { BalloonPanelView, ModelElement } from 'ckeditor5';
 // Callback which returns an element the toolbar should be attached to.
 export function _getSelectedAccordionWidget(selection) {
-  // if (this.editor.ui.focusTracker.isFocused) {
-  // console.log(selection.getFirstPosition());
   const selectionFocus = selection.focus;
   // console.log(selection.focus);
   if (selectionFocus !== null) {
-    // console.log('im trying');
-    // console.log(selection.focus.getAncestors().reverse());
     const accordion = selection.focus
       .getAncestors()
       .reverse()
@@ -16,6 +12,7 @@ export function _getSelectedAccordionWidget(selection) {
       .find((node) => node.is('element', 'div') && isAccordionWidget(node));
 
     if (accordion !== undefined && accordion.is('element')) {
+      console.log('is accordion', accordion);
       return accordion;
     }
     return null;
@@ -33,9 +30,10 @@ export function getSelectedAccordionWidget(selection) {
 }
 
 export function isAccordionWidget(element) {
-  // console.log(element.hasClass('accordion'));
-  return element.hasClass('ckeditor5-uw-bootstrap-accordion__widget');
-  // return element.hasClass('accordion');
+  // console.log(element.hasClass('ckeditor5-uw-bootstrap-accordion__widget'));
+  console.log('checking for isAccordionWidget');
+  // return element.hasClass('ckeditor5-uw-bootstrap-accordion__widget');
+  return element.hasClass('accordion');
 }
 // export function getSelectedAccordionWidget(
 //   selection: ViewDocumentSelection
@@ -54,7 +52,6 @@ export function isAccordionWidget(element) {
 export function _getSelectedAccordionModelElement(model, modelName) {
   const selection = model.document.selection;
   const foundElements = [];
-
   for (const range of selection.getRanges()) {
     for (const item of range.getItems()) {
       if (
@@ -66,7 +63,6 @@ export function _getSelectedAccordionModelElement(model, modelName) {
       }
     }
   }
-  // console.log('foundElements', foundElements[0]);
 
   return foundElements[0];
 }
@@ -158,3 +154,45 @@ const BALLOON_POSITIONS = (() => [
   BalloonPanelView.defaultPositions.southArrowNorthEast,
   BalloonPanelView.defaultPositions.viewportStickyNorth,
 ])();
+
+/**
+ * Finds a closest element of a model name in a given selection.
+ *
+ * @param {module:engine/model/selection~Selection} modelSelection
+ *   Model selection.
+ *
+ * @param {string} modelName
+ *   Model name of a searched element.
+ *
+ * @returns {module:engine/model/element~Element}
+ *   Found element.
+ */
+export function findElement(modelSelection, modelName) {
+  const selectedElement = modelSelection.getSelectedElement();
+  if (selectedElement && selectedElement.name == modelName) {
+    return selectedElement;
+  } else {
+    return modelSelection
+      .getFirstRange()
+      .getCommonAncestor()
+      .findAncestor(modelName);
+    // if (foundAncestor) {
+    //   console.log('FOUND IT ancestor', foundAncestor);
+    //   return foundAncestor;
+    // }
+    // console.log('looking for child');
+    // const foundChild = modelSelection.getSelectedElement();
+    // // .getChild(1)
+    // // .find((item) => item.name === modelName);
+    // console.log('FOUND IT child', foundChild);
+    // return foundChild;
+  }
+}
+
+export function repositionContextualBalloon(editor, target) {
+  const balloon = editor.plugins.get('ContextualBalloon');
+  const selection = editor.editing.view.document.selection;
+  let position;
+  console.log('reposition');
+  return;
+}

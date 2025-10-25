@@ -9,26 +9,30 @@ import {
   ViewDocumentSelection,
   LabeledFieldView,
 } from 'ckeditor5';
-import { UwBootstrapAccordionPropertiesCommand } from './uwbootstrapaccordionpropertiescommand';
 import UwBootstrapAccordionPropertiesView from './uwbootstrapaccordionpropertiesview';
 import {
   _getSelectedAccordionWidget,
   _getSelectedAccordionModelElement,
   getSelectedAccordionWidget,
   getAccordionWidgetAncestor,
+  findElement,
 } from '../uwbootstrapaccordionutils';
 
 export default class UwBootstrapAccordionPropertiesUI extends Plugin {
   static get requires() {
     return [ContextualBalloon];
   }
+
   /**
    * @inheritDoc
    */
   constructor(editor) {
     super(editor);
 
-    editor.config.define('uwBootstrapAccordion.accordionProperties', {});
+    editor.config.define('uwBootstrapAccordion.accordionProperties', {
+      id: 'putidhere',
+      accessibleTitleInput: 'put accessible title here',
+    });
   }
 
   /**
@@ -39,32 +43,41 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
 
     this._balloon = editor.plugins.get(ContextualBalloon);
 
-    editor.ui.componentFactory.add('accordionProperties', () =>
-      this._createAccordionPropertiesButton()
-    );
+    this._addToolbarButton();
+    this.propertiesFormView = this._createPropertiesFormView();
   }
 
   /**
-   * Creates the accordion properties button.
+   * Adds the accordion properties button.
    *
-   * @internal
+   * @private
    */
-  _createAccordionPropertiesButton() {
+  _addToolbarButton() {
     const editor = this.editor;
     const t = editor.t;
 
-    const view = new ButtonView(editor.locale);
+    editor.ui.componentFactory.add('accordionProperties', (locale) => {
+      const buttonView = new ButtonView(editor.locale);
 
-    view.set({
-      label: t('Accordion properties'),
-      icon: IconInsertMergeField,
-      tooltip: true,
+      buttonView.set({
+        label: t('Accordion properties'),
+        icon: IconInsertMergeField,
+        tooltip: true,
+      });
+
+      // Bind button to the command.
+      // The state on the button depends on the command values.
+      const command = editor.commands.get('uwBootstrapAccordionProperties');
+      buttonView.bind('isEnabled').to(command, 'isEnabled');
+      buttonView.bind('isOn').to(command, 'value', (value) => !!value);
+
+      // Execute the command whehn the button is clicked.
+      this.listenTo(buttonView, 'execute', () => this._showView());
+
+      return buttonView;
     });
-
-    this.listenTo(view, 'execute', () => this._showView());
-
-    return view;
   }
+
   /**
    * @inheritDoc
    */
@@ -78,149 +91,118 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
     }
   }
 
-  _createAccordionPropertiesView() {
+  _createPropertiesFormView() {
     const editor = this.editor;
-    const config = editor.config.get(
-      'uwBootstrapAccordion.accordionProperties'
-    );
-    // Get configuration settings for all things here. TODO:
-
-    const view = new UwBootstrapAccordionPropertiesView(editor.locale, {
-      // assign values from config here.
-    });
     const t = editor.t;
+    const command = editor.commands.get('uwBootstrapAccordionProperties');
+    const propertiesFormView = new UwBootstrapAccordionPropertiesView(
+      editor.locale
+    );
 
-    // Render the view so its #element is available for the clickOutsideHandler.
-    // view.render();
-    view.on('change:idInputView', this._someCallbackFunction('idInputView'));
-    // Listen for submit and change model accordingly.
-    this.listenTo(view, 'submit', () => {
-      // Setting texts: title and abbreviation.
-      // ...
-      const title = view.accessibleTitleInput.fieldView.element.value;
-      const id = view.idInputView.fieldView.element.value;
-      console.log('readingthis', title);
-      // Write the field data to the model
-      editor.model.change((writer) => {
-        const selection = editor.model.document.selection;
-        const selectedElement = selection.getSelectedElement();
-        // const foundElement; // todo, figure out how to find the accordion element
-        // write a function for this _getSelectedAccordionAccessibleTitle
+    // Form submit handler.
+    this.listenTo(propertiesFormView, 'submit', () => {
+      let values = {
+        id: propertiesFormView.idInputView.fieldView.element.value,
+        uwBootstrapAccordionAccessibleTitle:
+          propertiesFormView.accessibleTitleInput.fieldView.element.value,
+      };
 
-        if (selectedElement && id) {
-          writer.setAttribute('id', id, selectedElement);
-        }
-        if (selectedElement && title) {
-          this._changeViewContent(title, selection);
-        }
-      });
+      this.editor.execute('uwBootstrapAccordionProperties', values);
 
       // Hide the form view after submit.
       this._hideView();
     });
 
-    this.listenTo(view, 'cancel', () => {
+    this.listenTo(propertiesFormView, 'cancel', () => {
       this._hideView();
     });
 
     // Close on click outside of balloon panel element.
     clickOutsideHandler({
-      emitter: view,
+      emitter: propertiesFormView,
       activator: () => this._isViewInBalloon,
       contextElements: [this._balloon.view.element],
       callback: () => this._hideView(),
     });
 
-    view.on(
-      'change:idInputView',
-      this._someCallbackFunction({ viewField: view.idInputView })
-    );
-    view.on('change:accessibleTitleInput', () => {
-      console.log('on event');
-    });
-
-    return view;
+    return propertiesFormView;
   }
 
-  _showView() {
-    const editor = this.editor;
-    const viewAccordion = _getSelectedAccordionWidget(
-      editor.editing.view.document.selection
-    );
-    const modelAccordion =
-      viewAccordion && editor.editing.mapper.toModelElement(viewAccordion);
-
-    this.view = this._createAccordionPropertiesView();
-
-    this.listenTo(editor.ui, 'update', () => {
-      this._updateView();
-    });
-
-    this._fillViewWithValues();
-
+  _addFormView() {
     this._balloon.add({
-      view: this.view,
+      view: this.propertiesFormView,
       position: this._getBalloonPositionData(),
     });
+
+    const command = this.editor.commands.get('uwBootstrapAccordionProperties');
+
+    const modelToFormFields = {
+      id: 'idInputView',
+      uwBootstrapAccordionAccessibleTitle: 'accessibleTitleInput',
+    };
+
+    // Handle text input fields.
+    Object.entries(modelToFormFields).forEach(([modelName, formElName]) => {
+      const formEl = this.propertiesFormView[formElName];
+
+      // Needed to display a placeholder of the elements being focused before.
+      formEl.focus();
+
+      const isEmpty =
+        !command.value ||
+        !command.value[modelName] ||
+        command.value[modelName] === '';
+
+      // Set URL default value.
+      // if (modelName === 'demoLinkUrl' && isEmpty) {
+      //   formEl.fieldView.element.value = '#';
+      //   formEl.set('isEmpty', false);
+      //   return;
+      // }
+
+      if (!isEmpty) {
+        formEl.fieldView.element.value = command.value[modelName];
+        console.log(
+          'not empty...loading model field conversion',
+          formEl.fieldView.element.value
+        );
+      }
+      formEl.set('isEmpty', isEmpty);
+    });
+    // Reset the focus to the first form element.
+    // this.propertiesFormView.focus();
   }
 
-  // _getBalloonPositionData(editor) {
-  //   const selection = this.editor.model.document.selection;
-  //   // const modelAccordion = _getSelectedAccordionWidget(selection);
-  //   const modelAccordion = _getSelectedAccordionWidget(selection);
-  //   // console.log(modelAccordion);
-  //   const viewAccordion =
-  //     this.editor.editing.mapper.toViewElement(modelAccordion);
+  /**
+   * Shows the UI.
+   */
+  _showView() {
+    this._addFormView();
+  }
 
-  //   console.log(viewAccordion);
-  //   // const view = this.editor.editing.view;
-  //   // const viewDocument = view.document;
-  //   // let target = null;
-
-  //   // console.log(
-  //   //   _getSelectedAccordionWidget(viewDocument.selection).is(ViewPosition)
-  //   // );
-
-  //   // Set a target position by converting view selection range to DOM.
-  //   // view.domConverter.viewRangeToDom(
-  //   //   _getSelectedAccordionWidget(viewDocument.selection).getFirstRange()
-  //   // );
-  //   // view.domConverter.viewRangeToDom(viewDocument.selection.getFirstRange());
-  //   console.log(
-  //     this.editor.editing.view.domConverter.mapViewToDom(viewAccordion)
-  //   );
-  //   return {
-  //     target: this.editor.editing.view.domConverter.mapViewToDom(viewAccordion),
-  //   };
-  // }
   _getBalloonPositionData() {
     const view = this.editor.editing.view;
     const viewDocument = view.document;
     let target = null;
-    // console.log(viewDocument.getSelectedElement());
-    // this.editor.model.change((writer) => {
-    //   const firstAccordion = _getSelectedAccordionWidget(
-    //     this.editor.view.document.selection
-    //   );
-    //   const position = writer.createPositionAt(firstAccordion.selection, 0);
-    //   writer.setSelection(position);
-    //   console.log(position);
-    // });
-    // console.log(
-    //   'HERE',
-    //   _getSelectedAccordionWidget(viewDocument.selection).document.selection
-    // );
-    // const thisStartingPoint = _getSelectedAccordionWidget(
-    //   viewDocument.selection
-    // );
+
     // Set a target position by converting view selection range to DOM.
+    // console.log('balloon position info', viewDocument.selection);
+    // const selection = this.editor.model.document.selection;
+    // console.log('selection', selection);
+    // const modelAccordion = _getSelectedAccordionWidget(selection);
+    // console.log('modelAccordion', modelAccordion);
+    // const viewAccordion =
+    // this.editor.editing.mapper.toViewElement(modelAccordion);
+
+    // return {
+    // TODO: figure out if there's a way to reposition the balloon on the accordion we
+    // are in and not where the text cursor position is at the time.
+    // target = () =>
+    // this.editor.editing.view.domConverter.mapViewToDom(viewAccordion);
+    // target = () => view.domConverter.mapViewToDom(viewAccordion);
     target = () =>
       view.domConverter.viewRangeToDom(viewDocument.selection.getFirstRange());
-    // view.domConverter.viewRangeToDom(
-    //   thisStartingPoint.document.selection.getFirstRange()
-    // );
-    // console.log('TARGET', target);
-
+    // console.log(target);
     return {
       target,
     };
@@ -238,9 +220,9 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
 
     // Blur any input element before removing it from DOM to prevent issues in some browsers.
     // See https://github.com/ckeditor/ckeditor5/issues/1501.
-    this.view.saveButtonView.focus();
+    this.propertiesFormView.saveButtonView.focus();
 
-    this._balloon.remove(this.view);
+    this._balloon.remove(this.propertiesFormView);
 
     // Make sure the focus is not lost in the process by putting it directly
     // into the editing view.
@@ -254,32 +236,14 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
     const editor = this.editor;
     const viewDocument = editor.editing.view.document;
     const view = this.editor.editing.view;
-    // console.log('updateView', view);
-
-    // const title = view.accessibleTitleInput.fieldView.element.value;
-    // const id = view.idInputView.fieldView.element.value;
-    // console.log('readingthis');
-    // // Write the field data to the model
-    // editor.model.change((writer) => {
-    //   const selection = editor.model.document.selection;
-    //   const selectedElement = selection.getSelectedElement();
-    //   // const foundElement; // todo, figure out how to find the accordion element
-    //   // write a function for this _getSelectedAccordionAccessibleTitle
-
-    //   if (selectedElement && id) {
-    //     writer.setAttribute('id', id, selectedElement);
-    //   }
-    //   if (selectedElement && title) {
-    //     this._changeViewContent(title, selection);
-    //   }
-    // });
 
     if (
+      !_getSelectedAccordionWidget(viewDocument.selection)
       // !_getSelectedAccordionModelElement(
       //   this.editor.model,
       //   'uwBootstrapAccordion'
       // )
-      !getAccordionWidgetAncestor(viewDocument.selection)
+      // !getAccordionWidgetAncestor(viewDocument.selection)
     ) {
       this._hideView();
     } else if (this._isViewVisible) {
@@ -288,42 +252,9 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
   }
 
   /**
-   * Creates a callback that when executed upon {@link #view view's} property change
-   * executes a related editor command with the new property value.
-   *
-   * If new value will be set to the default value, the command will not be executed.
-   *
-   * @param commandName The command that will be executed.
+   * Returns `true` when the {@link #view} is the visible in the {@link #_balloon}.
    */
-  _getPropertyChangeCallback(commandName) {
-    return (EventInfo, propertyName, newValue) => {
-      // Do not execute the command on initial call (opening the table properties view).
-      if (this._isReady) {
-        return;
-      }
-
-      this.editor.execute(commandName, {
-        value: newValue,
-      });
-    };
-  }
-
-  _someCallbackFunction(viewField) {
-    // TODO - need to write a Command and put that in
-    // uwbootstrapaccordionpropertiescommand.js or something like that.
-    // if (this._isReady) {
-    //   return;
-    // }
-    // console.log('on event fired + ', viewField);
-    this.editor.execute('uwBootstrapAccordionProperties', {
-      incomingText: viewField,
-      modelElement: 'uwBootstrapAccordionAccessibleTitle',
-    });
-  }
-
-  _fillViewWithValues() {
-    this.view.accessibleTitleInput.fieldView.value = 'NOW!';
-    // this.view.set(this.view.accessibleTitleInput, 'badooobaa!');
-    // console.log('AGGGGHHH', this.view);
+  _isViewVisible() {
+    return !this.view && this._balloon.visibleView === this.view;
   }
 }

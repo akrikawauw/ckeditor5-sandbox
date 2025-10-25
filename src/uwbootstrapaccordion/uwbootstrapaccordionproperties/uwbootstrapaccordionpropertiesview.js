@@ -8,6 +8,7 @@ import {
   FormHeaderView,
   FormRowView,
   ButtonView,
+  SwitchButtonView,
   IconCheck,
   IconCancel,
   submitHandler,
@@ -16,14 +17,14 @@ import {
 export default class UwBootstrapAccordionPropertiesView extends View {
   constructor(locale) {
     super(locale);
-    // console.log('type of idInputViewIncoming', typeof idInputViewIncoming);
-    // console.log('type of other field', typeof accessibleTitleInputIncoming);
-    // this.idInputViewIncoming = idInputViewIncoming;
-    // this.accessibleTitleInputIncoming = accessibleTitleInputIncoming;
 
     this.idInputView = this._createIdInput();
     this.accessibleTitleInput = this._createAccessibleTitleInput();
-
+    this.titleStyleSwitchButton = this._createSwitchButton(
+      'Uppercase titles?',
+      true
+    );
+    this.titleBoldSwitchButton = this._createSwitchButton('Bold titles?', true);
     // console.log('SDFDSAFDSFS', this.accessibleTitleInput);
     // this.idInputView.fieldView.value = idInputViewIncoming;
     // this.accessibleTitleInput.fieldView.value = accessibleTitleInputIncoming;
@@ -63,6 +64,7 @@ export default class UwBootstrapAccordionPropertiesView extends View {
 
     this.childViews = this.createCollection([
       this.formHeader,
+      this.titleStyleSwitchButton,
       this.idInputView,
       this.accessibleTitleInput,
       this.actionRow,
@@ -102,11 +104,7 @@ export default class UwBootstrapAccordionPropertiesView extends View {
     labeledInput.label = t('Accordion ID');
     labeledInput.class = 'ck-labeled-field-view_full-width';
 
-    labeledInput.fieldView.bind('value').to(this, 'idInputView');
-    // labeledInput.fieldView.on('input', () => {
-    //   console.log('on input event idInputView');
-    //   this.idInputView = labeledInput.fieldView.element.value;
-    // });
+    // labeledInput.fieldView.bind('value').to(this, 'idInputView');
 
     return labeledInput;
   }
@@ -121,17 +119,27 @@ export default class UwBootstrapAccordionPropertiesView extends View {
     labeledInput.label = t('Accessible name');
     labeledInput.class = 'ck-labeled-field-view_full-width';
 
-    // labeledInput.fieldView.bind('value').to(this, 'accessibleTitleInput');
-    // labeledInput.fieldView.on('input', () => {
-    //   this.accessibleTitleInput = labeledInput.fieldView.element.value;
-    //   console.log(
-    //     'on input event accessibleTitleInput',
-    //     this.accessibleTitleInput
-    //   );
-    // });
-    console.log(labeledInput.value);
+    // console.log(labeledInput.value);
 
     return labeledInput;
+  }
+
+  _createSwitchButton(label, isOn) {
+    const t = this.locale.t;
+    const switchButton = new SwitchButtonView(this.locale);
+
+    switchButton.set({
+      withText: true,
+      label: label,
+      // isOn: isOn,
+      isToggleable: true,
+    });
+
+    switchButton.on('execute', () => {
+      switchButton.isOn = !switchButton.isOn;
+    });
+
+    return switchButton;
   }
 
   _createButton(label, icon, className) {

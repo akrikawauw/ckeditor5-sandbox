@@ -32,7 +32,7 @@
 
         button {
           font-family: 'Encode Sans Compressed', sans-serif;
-          text-transform: uppercase;
+          /* text-transform: uppercase; */
           color: #000000;
           font-weight: 900;
           font-size: 1em;

@@ -110,6 +110,7 @@ export default class UwBootstrapAccordionEditing extends Plugin {
         'id',
         'uwBootstrapAccordionId',
         'uwBootstrapAccordionTitleStyle',
+        'uwBootstrapAccordionTitleWeight',
       ],
       allowChildren: ['uwBootstrapAccordionItem'],
     });
@@ -210,6 +211,8 @@ export default class UwBootstrapAccordionEditing extends Plugin {
       view: 'id',
     });
 
+    conversion.elementToAttribute;
+
     conversion.for('upcast').add((dispatcher) => {
       // Look for every accordion.
       dispatcher.on('element:div', (evt, data, conversionApi) => {
@@ -225,9 +228,16 @@ export default class UwBootstrapAccordionEditing extends Plugin {
         if (
           consumable.consume(viewItem, { name: true, classes: 'accordion' })
         ) {
+          // console.log(viewItem);
+          const classes = viewItem.getAttribute('class');
+          const titleStyle = classes.includes('uppercase-title')
+            ? 'uppercase'
+            : 'lowercase';
           const modelElement = writer.createElement('uwBootstrapAccordion', {
             uwBootstrapAccordionId: viewItem.getAttribute('id') || uid(),
+            uwBootstrapAccordionTitleStyle: titleStyle,
           });
+          // Array(classes).find(class === 'uppercase-title'),
           if (safeInsert(modelElement, data.modelCursor)) {
             convertChildren(viewItem, modelElement);
             updateConversionResult(modelElement, data);
@@ -235,25 +245,48 @@ export default class UwBootstrapAccordionEditing extends Plugin {
         }
       });
     });
-    conversion.for('dataDowncast').elementToElement({
-      model: 'uwBootstrapAccordion',
-      view: {
-        name: 'div',
-        classes: 'accordion',
-        // attributes: ['id', 'uwBootstrapAccordionId'],
-      },
-    });
     conversion.for('editingDowncast').elementToElement({
       model: 'uwBootstrapAccordion',
       view: (modelElement, { writer: viewWriter }) => {
+        const classesToAdd =
+          modelElement.getAttribute('uwBootstrapAccordionTitleStyle') ===
+          'uppercase'
+            ? ' uppercase-title'
+            : '';
         const div = viewWriter.createContainerElement('div', {
-          class: 'accordion ckeditor5-uw-bootstrap-accordion__widget',
+          class: 'accordion' + classesToAdd,
           id: modelElement.getAttribute('uwBootstrapAccordionId'), // Map model attribute to data attribute
         });
         return toWidget(div, viewWriter, {
           label: 'UW bootstrap accordion widget',
           hasSelectionHandle: true,
         });
+      },
+    });
+
+    conversion.for('dataDowncast').elementToElement({
+      model: 'uwBootstrapAccordion',
+      view: (modelElement, { writer: viewWriter }) => {
+        const classesToAdd =
+          modelElement.getAttribute('uwBootstrapAccordionTitleStyle') ===
+          'uppercase'
+            ? ' uppercase-title'
+            : '';
+        const div = viewWriter.createContainerElement('div', {
+          class: 'accordion' + classesToAdd,
+          id: modelElement.getAttribute('uwBootstrapAccordionId'), // Map model attribute to data attribute
+        });
+        return div;
+      },
+    });
+
+    conversion.attributeToAttribute({
+      model: 'uwBootstrapAccordionTitleStyle',
+      view: (modelAttributeValue) => {
+        return {
+          key: 'class',
+          value: modelAttributeValue === 'uppercase' ? 'uppercase-title' : '',
+        };
       },
     });
 

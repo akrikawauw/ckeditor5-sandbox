@@ -101,13 +101,20 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
 
     // Form submit handler.
     this.listenTo(propertiesFormView, 'submit', () => {
+      // Get our value for the switch button.
+      const titleStyleToSend =
+        propertiesFormView.titleStyleSwitchButton.isOn === true
+          ? 'uppercase'
+          : 'lowercase';
+      // console.log('XXX', propertiesFormView.titleStyleSwitchButton);
       let values = {
         uwBootstrapAccordionId:
           propertiesFormView.idInputView.fieldView.element.value,
         uwBootstrapAccordionAccessibleTitle:
           propertiesFormView.accessibleTitleInput.fieldView.element.value,
+        uwBootstrapAccordionTitleStyle: titleStyleToSend,
       };
-
+      // console.log(values);
       this.editor.execute('uwBootstrapAccordionProperties', values);
 
       // Hide the form view after submit.
@@ -145,7 +152,7 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
     // Handle text input fields.
     Object.entries(modelToFormFields).forEach(([modelName, formElName]) => {
       const formEl = this.propertiesFormView[formElName];
-
+      console.log(formEl);
       // Needed to display a placeholder of the elements being focused before.
       formEl.focus();
 
@@ -154,12 +161,7 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
         !command.value[modelName] ||
         command.value[modelName] === '';
 
-      // Set URL default value.
-      // if (modelName === 'demoLinkUrl' && isEmpty) {
-      //   formEl.fieldView.element.value = '#';
-      //   formEl.set('isEmpty', false);
-      //   return;
-      // }
+      // TODO - maybe set the id value here instead of in insertuwBootstrapAccorrdionCommand
 
       if (!isEmpty) {
         formEl.fieldView.element.value = command.value[modelName];
@@ -170,8 +172,20 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
       }
       formEl.set('isEmpty', isEmpty);
     });
-    // Reset the focus to the first form element.
-    // this.propertiesFormView.focus();
+
+    // Handle the switch input fields.
+    const modelToSwitchButtons = {
+      uwBootstrapAccordionTitleStyle: 'titleStyleSwitchButton',
+    };
+
+    Object.entries(modelToSwitchButtons).forEach(([modelName, formElName]) => {
+      const formEl = this.propertiesFormView[formElName];
+      console.log(formEl);
+      // Needed to display a placeholder of the elements being focused before.
+      formEl.focus();
+      const isOn = command.value[modelName] === 'uppercase';
+      formEl.set('isOn', isOn);
+    });
   }
 
   /**

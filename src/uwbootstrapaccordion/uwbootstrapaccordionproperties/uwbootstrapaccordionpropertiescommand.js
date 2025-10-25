@@ -25,12 +25,14 @@ export class UwBootstrapAccordionPropertiesCommand extends Command {
     // Process accordionEl attributes
     for (const [attrKey, attrValue] of uwBootstrapAccordionEl.getAttributes()) {
       this.value[attrKey] = attrValue;
+      console.log('attributes', attrKey, attrValue);
     }
 
     // Get the first child and its data which will be the accessible title.
     const childEl = uwBootstrapAccordionEl.getChild(0);
     const childTextNode = childEl.getChild(0);
     this.value[childEl.name] = childTextNode._data;
+
     console.log('REFRESH', this.value);
   }
 
@@ -58,6 +60,15 @@ export class UwBootstrapAccordionPropertiesCommand extends Command {
           uwBootstrapAccordionEl
         );
       }
+
+      if (values.uwBootstrapAccordionTitleStyle) {
+        writer.setAttribute(
+          'uwBootstrapAccordionTitleStyle',
+          values.uwBootstrapAccordionTitleStyle,
+          uwBootstrapAccordionEl
+        );
+      }
+
       // The Accessible Title is the first child in the schema. Get it.
       const uwBootstrapAccordionAccessibleTitleEl =
         uwBootstrapAccordionEl.getChild(0);

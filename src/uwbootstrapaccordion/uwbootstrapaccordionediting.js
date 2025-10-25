@@ -106,7 +106,11 @@ export default class UwBootstrapAccordionEditing extends Plugin {
 
       // Allow in place wehere other blocks are allowed (e.g. directly in the root).
       allowWhere: '$block',
-      allowAttributes: ['id', 'titleStyle', 'itemsAllOpen'],
+      allowAttributes: [
+        'id',
+        'uwBootstrapAccordionId',
+        'uwBootstrapAccordionTitleStyle',
+      ],
       allowChildren: ['uwBootstrapAccordionItem'],
     });
 
@@ -178,29 +182,34 @@ export default class UwBootstrapAccordionEditing extends Plugin {
   _defineConverters() {
     const conversion = this.editor.conversion;
 
-    conversion.attributeToAttribute({
-      model: 'buttonType',
-      view: 'type',
-    });
-    conversion.attributeToAttribute({
-      model: 'buttonDataToggle',
-      view: 'data-toggle',
-    });
-    conversion.attributeToAttribute({
-      model: 'buttonDataTarget',
-      view: 'data-target',
-    });
-    conversion.attributeToAttribute({
-      model: 'buttonAriaExpanded',
-      view: 'aria-expanded',
-    });
-    conversion.attributeToAttribute({
-      model: 'buttonAriaControls',
-      view: 'aria-controls',
-    });
+    // conversion.attributeToAttribute({
+    //   model: 'buttonType',
+    //   view: 'type',
+    // });
+    // conversion.attributeToAttribute({
+    //   model: 'buttonDataToggle',
+    //   view: 'data-toggle',
+    // });
+    // conversion.attributeToAttribute({
+    //   model: 'buttonDataTarget',
+    //   view: 'data-target',
+    // });
+    // conversion.attributeToAttribute({
+    //   model: 'buttonAriaExpanded',
+    //   view: 'aria-expanded',
+    // });
+    // conversion.attributeToAttribute({
+    //   model: 'buttonAriaControls',
+    //   view: 'aria-controls',
+    // });
 
     // <bootstrapAccordion> converters
     // TODO: explore using a dispatcher
+    conversion.attributeToAttribute({
+      model: 'uwBootstrapAccordionId',
+      view: 'id',
+    });
+
     conversion.for('upcast').add((dispatcher) => {
       // Look for every accordion.
       dispatcher.on('element:div', (evt, data, conversionApi) => {
@@ -217,7 +226,7 @@ export default class UwBootstrapAccordionEditing extends Plugin {
           consumable.consume(viewItem, { name: true, classes: 'accordion' })
         ) {
           const modelElement = writer.createElement('uwBootstrapAccordion', {
-            id: viewItem.getAttribute('id') || uid(),
+            uwBootstrapAccordionId: viewItem.getAttribute('id') || uid(),
           });
           if (safeInsert(modelElement, data.modelCursor)) {
             convertChildren(viewItem, modelElement);
@@ -231,6 +240,7 @@ export default class UwBootstrapAccordionEditing extends Plugin {
       view: {
         name: 'div',
         classes: 'accordion',
+        // attributes: ['id', 'uwBootstrapAccordionId'],
       },
     });
     conversion.for('editingDowncast').elementToElement({
@@ -238,7 +248,7 @@ export default class UwBootstrapAccordionEditing extends Plugin {
       view: (modelElement, { writer: viewWriter }) => {
         const div = viewWriter.createContainerElement('div', {
           class: 'accordion ckeditor5-uw-bootstrap-accordion__widget',
-          id: modelElement.getAttribute('id'), // Map model attribute to data attribute
+          id: modelElement.getAttribute('uwBootstrapAccordionId'), // Map model attribute to data attribute
         });
         return toWidget(div, viewWriter, {
           label: 'UW bootstrap accordion widget',

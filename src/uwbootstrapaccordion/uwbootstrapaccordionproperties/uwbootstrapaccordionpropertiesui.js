@@ -29,10 +29,10 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
   constructor(editor) {
     super(editor);
 
-    editor.config.define('uwBootstrapAccordion.accordionProperties', {
-      id: 'putidhere',
-      accessibleTitleInput: 'put accessible title here',
-    });
+    // editor.config.define('uwBootstrapAccordion.accordionProperties', {
+    //   id: 'putidhere',
+    //   accessibleTitleInput: 'put accessible title here',
+    // });
   }
 
   /**
@@ -102,7 +102,8 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
     // Form submit handler.
     this.listenTo(propertiesFormView, 'submit', () => {
       let values = {
-        id: propertiesFormView.idInputView.fieldView.element.value,
+        uwBootstrapAccordionId:
+          propertiesFormView.idInputView.fieldView.element.value,
         uwBootstrapAccordionAccessibleTitle:
           propertiesFormView.accessibleTitleInput.fieldView.element.value,
       };
@@ -137,7 +138,7 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
     const command = this.editor.commands.get('uwBootstrapAccordionProperties');
 
     const modelToFormFields = {
-      id: 'idInputView',
+      uwBootstrapAccordionId: 'idInputView',
       uwBootstrapAccordionAccessibleTitle: 'accessibleTitleInput',
     };
 

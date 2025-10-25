@@ -49,14 +49,12 @@ export class UwBootstrapAccordionPropertiesCommand extends Command {
       );
       console.log(uwBootstrapAccordionEl);
 
-      if (values.id) {
-        // const uwBootstrapAccordionEl = getSelectedAccordionWidget(selection);
-        console.log('values.id in execute', values.id);
+      if (values.uwBootstrapAccordionId) {
+        // console.log('values.id in execute', values.uwBootstrapAccordionId);
         // Set the id for the uwBootstrapAccordion.
         writer.setAttribute(
-          'id',
-          values.id,
-          // 'hankus',
+          'uwBootstrapAccordionId',
+          values.uwBootstrapAccordionId,
           uwBootstrapAccordionEl
         );
       }

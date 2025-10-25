@@ -33,7 +33,7 @@ export class InsertUwBootstrapAccordionCommand extends Command {
 
 export const createBootstrapAccordion = (writer) => {
   const bootstrapAccordion = writer.createElement('uwBootstrapAccordion', {
-    id: uid(),
+    uwBootstrapAccordionId: uid(),
   });
   const bootstrapAccordionAccessibleTitle = writer.createElement(
     'uwBootstrapAccordionAccessibleTitle'

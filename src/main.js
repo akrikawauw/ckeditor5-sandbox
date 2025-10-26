@@ -61,12 +61,12 @@ const editor = await ClassicEditor.create(element, {
         // classes: true, // Allow all attributes on <button>
         // attributes: true, // Allow children inside <button>
       },
-      // {
-      //   name: 'span',
-      //   attributes: true, // Allow all attributes on <span>
-      //   classes: true, // Allow classes on <span>
-      //   styles: true, // Allow styles on <span>
-      // },
+      {
+        name: 'span',
+        attributes: true, // Allow all attributes on <span>
+        classes: true, // Allow classes on <span>
+        styles: true, // Allow styles on <span>
+      },
       // {
       //   name: /.*/,
       //   attributes: true,

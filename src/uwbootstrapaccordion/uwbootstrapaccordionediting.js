@@ -150,6 +150,10 @@ export default class UwBootstrapAccordionEditing extends Plugin {
 
       // Allow content which is allowed in blocks (i.e. text with attributes).
       allowContentOf: '$text',
+      allowChildren: [
+        'uwBootstrapAccordionButtonText',
+        'uwBootstrapAccordionButtonArrow',
+      ],
     });
 
     schema.register('uwBootstrapAccordionButtonText', {
@@ -162,6 +166,13 @@ export default class UwBootstrapAccordionEditing extends Plugin {
 
       // Allow content which is allowed in blocks (i.e. text with attributes).
       allowAttributes: ['buttonText'],
+    });
+
+    schema.register('uwBootstrapAccordionButtonArrow', {
+      isInline: true,
+      allowIn: 'uwBootstrapAccordionButton',
+      // allowChildren: ['$text'],
+      allowAttributes: true,
     });
 
     schema.register('uwBootstrapAccordionCollapse', {
@@ -485,30 +496,23 @@ export default class UwBootstrapAccordionEditing extends Plugin {
       },
     });
 
-    //   editor.conversion
-    // .for( 'downcast' )
-    // .elementToStructure( {
-    // 	model: 'wrappedParagraph',
-    // 	view: ( modelElement, conversionApi ) => {
-    // 		const { writer } = conversionApi;
-    // 		const paragraphViewElement = writer.createContainerElement( 'p', {}, [
-    // 			writer.createSlot()
-    // 		] );
-
-    // 		return writer.createContainerElement( 'div', { class: 'wrapper' }, [
-    // 			paragraphViewElement
-    // 		] );
-    // 	}
-    // } );
-
     conversion.for('dataDowncast').elementToStructure({
       model: 'uwBootstrapAccordionButton',
       view: (modelElement, conversionApi) => {
         const { writer } = conversionApi;
+        const slotForButtonViewElement = writer.createSlot();
+        const arrowBoxInnerSpanElement = writer.createAttributeElement('span', {
+          class: 'arrow',
+        });
+        const arrowBoxOuterSpanElement = writer.createContainerElement(
+          'span',
+          { class: 'arrow-box' },
+          [arrowBoxInnerSpanElement]
+        );
         const buttonViewElement = writer.createContainerElement(
           'button',
           { class: 'btn btn-link' },
-          [writer.createSlot()]
+          [slotForButtonViewElement, arrowBoxOuterSpanElement]
         );
 
         return writer.createContainerElement('h3', { class: 'mb-0' }, [
@@ -516,25 +520,24 @@ export default class UwBootstrapAccordionEditing extends Plugin {
         ]);
       },
     });
-
-    // conversion.for('editingDowncast').elementToElement({
-    //   model: 'uwBootstrapAccordionButton',
-    //   view: {
-    //     name: 'h3',
-    //     classes: ['mb-0'],
-    //   },
-    // });
 
     conversion.for('editingDowncast').elementToStructure({
       model: 'uwBootstrapAccordionButton',
       view: (modelElement, conversionApi) => {
         const { writer } = conversionApi;
+        const slotForButtonViewElement = writer.createSlot();
+        const arrowBoxInnerSpanElement = writer.createAttributeElement('span', {
+          class: 'arrow',
+        });
+        const arrowBoxOuterSpanElement = writer.createContainerElement(
+          'span',
+          { class: 'arrow-box' },
+          [arrowBoxInnerSpanElement]
+        );
         const buttonViewElement = writer.createContainerElement(
           'button',
-          {
-            class: 'btn btn-link',
-          },
-          [writer.createSlot()]
+          { class: 'btn btn-link' },
+          [slotForButtonViewElement, arrowBoxOuterSpanElement]
         );
 
         return writer.createContainerElement('h3', { class: 'mb-0' }, [
@@ -542,32 +545,6 @@ export default class UwBootstrapAccordionEditing extends Plugin {
         ]);
       },
     });
-    // conversion.for('editingDowncast').elementToElement({
-    //   model: 'uwBootstrapAccordionButton',
-    //   view: (modelElement, conversionApi) => {
-    //     const {writer} = conversionApi;
-    //     const buttonTextSpan = writer.createEditableElement(
-    //       'span',
-    //       {class: 'btn-text'},
-    //     );
-    //     const button = writer.createContainerElement('button', {classes: 'btn btn-link'}, [
-    //       buttonTextSpan
-    //     ]);
-    //     // return writer.createContainerElement('button', {classes: 'btn btn-link'}, [
-    //     //   buttonTextSpan
-    //     // ]);
-    //     const buttonAndSpan = writer.createContainerElement('button', {class: 'btn btn-link'}, [
-    //       buttonTextSpan
-    //     ]);
-    //     return toWidget(buttonAndSpan, writer);
-    //
-    //   }
-    // });
-    // For <span>s
-    // conversion.for('downcast').attributeToAttribute( {
-    //   model: {name: 'span', class: ['btn-text']},
-    //   view: 'span'
-    // })
 
     // uwBootstrapAccordionButtonText
     // <justAButtonText> converters
@@ -605,6 +582,43 @@ export default class UwBootstrapAccordionEditing extends Plugin {
         });
       },
     });
+
+    // uwBootstrapButtonArrow
+    // conversion.for('upcast').elementToElement({
+    //   model: 'uwBootstrapAccordionButtonArrow',
+    //   view: {
+    //     name: 'span',
+    //     class: 'arrow-box',
+    //   },
+    // });
+
+    // conversion.for('downcast').elementToElement({
+    //   model: 'uwBoostrapAccordionButtonArrow',
+    //   view: (modelElement, { writer }) => {
+    //     // You can add attributes to the span if needed
+    //     return writer.createAttributeElement(
+    //       'span',
+    //       {
+    //         class: 'arrow-box',
+    //       },
+    //       { id: 'marker:my' }
+    //     );
+    //   },
+    // });
+    // conversion.for('dataDowncast').elementToElement({
+    //   model: 'uwBoostrapAccordionButtonArrow',
+    //   view: {
+    //     name: 'span',
+    //     classes: 'arrow-box',
+    //   },
+    // });
+    // conversion.for('editingDowncast').elementToElement({
+    //   model: 'uwBoostrapAccordionButtonArrow',
+    //   view: {
+    //     name: 'span',
+    //     classes: 'arrow-box',
+    //   },
+    // });
 
     // uwBootstrapAccordionCollapse
     conversion.for('upcast').elementToElement({

@@ -44,6 +44,9 @@ export const createBootstrapAccordionItem = (writer) => {
   const bootstrapAccordionButtonText = writer.createElement(
     'uwBootstrapAccordionButtonText'
   );
+  const bootstrapAccordionButtonArrow = writer.createElement(
+    'uwBootstrapAccordionButtonArrow'
+  );
   const bootstrapAccordionCollapse = writer.createElement(
     'uwBootstrapAccordionCollapse'
   );
@@ -65,6 +68,8 @@ export const createBootstrapAccordionItem = (writer) => {
   writer.append(placeholderButtonText, bootstrapAccordionButtonText);
 
   writer.append(bootstrapAccordionButtonText, bootstrapAccordionButton);
+
+  // writer.append(bootstrapAccordionButtonArrow, bootstrapAccordionButton);
   writer.append(bootstrapAccordionButton, bootstrapAccordionHeading);
   writer.append(bootstrapAccordionBody, bootstrapAccordionCollapse);
   writer.append(bootstrapAccordionHeading, bootstrapAccordionItem);

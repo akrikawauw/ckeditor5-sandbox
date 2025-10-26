@@ -69,7 +69,7 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
       // The state on the button depends on the command values.
       const command = editor.commands.get('uwBootstrapAccordionProperties');
       buttonView.bind('isEnabled').to(command, 'isEnabled');
-      buttonView.bind('isOn').to(command, 'value', (value) => !!value);
+      // buttonView.bind('isOn').to(command, 'value', (value) => !!value);
 
       // Execute the command whehn the button is clicked.
       this.listenTo(buttonView, 'execute', () => this._showView());
@@ -102,17 +102,24 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
     // Form submit handler.
     this.listenTo(propertiesFormView, 'submit', () => {
       // Get our value for the switch button.
-      const titleStyleToSend =
+      const titleStyleValueForModel =
         propertiesFormView.titleStyleSwitchButton.isOn === true
           ? 'uppercase'
           : 'lowercase';
-      // console.log('XXX', propertiesFormView.titleStyleSwitchButton);
+
+      // Get the title weight value from the switch button.
+      const titleWeightValueForModel =
+        propertiesFormView.titleWeightSwitchButton.isOn === true
+          ? 'bold'
+          : 'non-bold';
+
       let values = {
         uwBootstrapAccordionId:
           propertiesFormView.idInputView.fieldView.element.value,
         uwBootstrapAccordionAccessibleTitle:
           propertiesFormView.accessibleTitleInput.fieldView.element.value,
-        uwBootstrapAccordionTitleStyle: titleStyleToSend,
+        uwBootstrapAccordionTitleStyle: titleStyleValueForModel,
+        uwBootstrapAccordionTitleWeight: titleWeightValueForModel,
       };
       // console.log(values);
       this.editor.execute('uwBootstrapAccordionProperties', values);
@@ -152,7 +159,7 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
     // Handle text input fields.
     Object.entries(modelToFormFields).forEach(([modelName, formElName]) => {
       const formEl = this.propertiesFormView[formElName];
-      console.log(formEl);
+      // console.log(formEl);
       // Needed to display a placeholder of the elements being focused before.
       formEl.focus();
 
@@ -165,10 +172,6 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
 
       if (!isEmpty) {
         formEl.fieldView.element.value = command.value[modelName];
-        console.log(
-          'not empty...loading model field conversion',
-          formEl.fieldView.element.value
-        );
       }
       formEl.set('isEmpty', isEmpty);
     });
@@ -176,14 +179,22 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
     // Handle the switch input fields.
     const modelToSwitchButtons = {
       uwBootstrapAccordionTitleStyle: 'titleStyleSwitchButton',
+      uwBootstrapAccordionTitleWeight: 'titleWeightSwitchButton',
     };
 
+    this.propertiesFormView;
     Object.entries(modelToSwitchButtons).forEach(([modelName, formElName]) => {
       const formEl = this.propertiesFormView[formElName];
-      console.log(formEl);
-      // Needed to display a placeholder of the elements being focused before.
+      // console.log(formEl);
       formEl.focus();
-      const isOn = command.value[modelName] === 'uppercase';
+      let isOn = false;
+      console.log(formElName);
+      // Needed to display a placeholder of the elements being focused before.
+      if (formElName === 'titleStyleSwitchButton') {
+        isOn = command.value[modelName] === 'uppercase';
+      } else if (formElName === 'titleWeightSwitchButton') {
+        isOn = command.value[modelName] === 'bold';
+      }
       formEl.set('isOn', isOn);
     });
   }
@@ -200,21 +211,6 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
     const viewDocument = view.document;
     let target = null;
 
-    // Set a target position by converting view selection range to DOM.
-    // console.log('balloon position info', viewDocument.selection);
-    // const selection = this.editor.model.document.selection;
-    // console.log('selection', selection);
-    // const modelAccordion = _getSelectedAccordionWidget(selection);
-    // console.log('modelAccordion', modelAccordion);
-    // const viewAccordion =
-    // this.editor.editing.mapper.toViewElement(modelAccordion);
-
-    // return {
-    // TODO: figure out if there's a way to reposition the balloon on the accordion we
-    // are in and not where the text cursor position is at the time.
-    // target = () =>
-    // this.editor.editing.view.domConverter.mapViewToDom(viewAccordion);
-    // target = () => view.domConverter.mapViewToDom(viewAccordion);
     target = () =>
       view.domConverter.viewRangeToDom(viewDocument.selection.getFirstRange());
     // console.log(target);

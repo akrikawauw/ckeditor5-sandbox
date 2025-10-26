@@ -13,7 +13,7 @@ export default class UwBootstrapAccordionEditing extends Plugin {
   }
 
   init() {
-    console.log('UwBootstrapAccordionEditing#init() got called');
+    // console.log('UwBootstrapAccordionEditing#init() got called');
 
     this._defineSchema();
     this._defineConverters();
@@ -244,9 +244,13 @@ export default class UwBootstrapAccordionEditing extends Plugin {
           const titleStyle = classes.includes('uppercase-title')
             ? 'uppercase'
             : 'lowercase';
+          const titleWeight = classes.includes('non-bold')
+            ? 'non-bold'
+            : 'bold';
           const modelElement = writer.createElement('uwBootstrapAccordion', {
             uwBootstrapAccordionId: viewItem.getAttribute('id') || uid(),
             uwBootstrapAccordionTitleStyle: titleStyle,
+            uwBootstrapAccordionTitleWeight: titleWeight,
           });
           // Array(classes).find(class === 'uppercase-title'),
           if (safeInsert(modelElement, data.modelCursor)) {
@@ -259,13 +263,20 @@ export default class UwBootstrapAccordionEditing extends Plugin {
     conversion.for('editingDowncast').elementToElement({
       model: 'uwBootstrapAccordion',
       view: (modelElement, { writer: viewWriter }) => {
-        const classesToAdd =
+        const titleClassToAdd =
           modelElement.getAttribute('uwBootstrapAccordionTitleStyle') ===
           'uppercase'
             ? ' uppercase-title'
             : '';
+        const weightClassToAdd =
+          modelElement.getAttribute('uwBootstrapAccordionTitleWeight') ===
+          'non-bold'
+            ? ' non-bold'
+            : '';
+        const classesForAccordion =
+          'accordion' + titleClassToAdd + weightClassToAdd;
         const div = viewWriter.createContainerElement('div', {
-          class: 'accordion' + classesToAdd,
+          class: classesForAccordion,
           id: modelElement.getAttribute('uwBootstrapAccordionId'), // Map model attribute to data attribute
         });
         return toWidget(div, viewWriter, {
@@ -278,13 +289,19 @@ export default class UwBootstrapAccordionEditing extends Plugin {
     conversion.for('dataDowncast').elementToElement({
       model: 'uwBootstrapAccordion',
       view: (modelElement, { writer: viewWriter }) => {
-        const classesToAdd =
+        const titleClassToAdd =
           modelElement.getAttribute('uwBootstrapAccordionTitleStyle') ===
           'uppercase'
             ? ' uppercase-title'
             : '';
+        const weightClassToAdd =
+          modelElement.getAttribute('uwBootstrapAccordionTitleWeight') ===
+          'non-bold'
+            ? ' non-bold'
+            : '';
+
         const div = viewWriter.createContainerElement('div', {
-          class: 'accordion' + classesToAdd,
+          class: 'accordion' + titleClassToAdd + weightClassToAdd,
           id: modelElement.getAttribute('uwBootstrapAccordionId'), // Map model attribute to data attribute
         });
         return div;
@@ -297,6 +314,16 @@ export default class UwBootstrapAccordionEditing extends Plugin {
         return {
           key: 'class',
           value: modelAttributeValue === 'uppercase' ? 'uppercase-title' : '',
+        };
+      },
+    });
+
+    conversion.attributeToAttribute({
+      model: 'uwBootstrapAccordionTitleWeight',
+      view: (modelAttributeValue) => {
+        return {
+          key: 'class',
+          value: modelAttributeValue === 'non-bold' ? 'non-bold' : '',
         };
       },
     });

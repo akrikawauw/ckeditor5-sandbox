@@ -7,6 +7,7 @@ import {
   createLabeledTextarea,
   FormHeaderView,
   FormRowView,
+  LabelView,
   ButtonView,
   SwitchButtonView,
   IconCheck,
@@ -18,16 +19,10 @@ export default class UwBootstrapAccordionPropertiesView extends View {
   constructor(locale) {
     super(locale);
 
-    this.idInputView = this._createIdInput();
-    this.accessibleTitleInput = this._createAccessibleTitleInput();
-    this.titleStyleSwitchButton = this._createSwitchButton(
-      'Uppercase titles?',
-      true
-    );
-    this.titleBoldSwitchButton = this._createSwitchButton('Bold titles?', true);
-    // console.log('SDFDSAFDSFS', this.accessibleTitleInput);
-    // this.idInputView.fieldView.value = idInputViewIncoming;
-    // this.accessibleTitleInput.fieldView.value = accessibleTitleInputIncoming;
+    this.idInputView = this._createInputText('Accordion ID');
+    this.accessibleTitleInput = this._createInputText('Accessible title text');
+    this.titleStyleSwitchButton = this._createSwitchButton('Uppercase?', true);
+    this.titleWeightSwitchButton = this._createSwitchButton('Bold?', true);
 
     // Form header.
     this.formHeader = new FormHeaderView(locale, {
@@ -53,10 +48,25 @@ export default class UwBootstrapAccordionPropertiesView extends View {
       'ck-button-cancel'
     );
 
+    this.switchButtonRow = new FormRowView(locale, {
+      children: [this.titleStyleSwitchButton, this.titleWeightSwitchButton],
+      class: 'ck-accordion-properties-form__switch-button-row',
+    });
+
+    this.accessibleTitleInputRow = new FormRowView(locale, {
+      children: [this.accessibleTitleInput],
+      class: 'ck-accordion-properties-form__accessible-title-input-row',
+    });
+
+    this.idInputViewRow = new FormRowView(locale, {
+      children: [this.idInputView],
+      class: 'ck-accordion-properties-form__id-input-view-row',
+    });
+
     // Action row.
     this.actionRow = new FormRowView(locale, {
       children: [this.saveButtonView, this.cancelButtonView],
-      class: 'ck-accordion--properties-form__action-row',
+      class: 'ck-accordion-properties-form__action-row',
     });
 
     // Delegate ButtonView#execute to FormView#cancel.
@@ -64,16 +74,21 @@ export default class UwBootstrapAccordionPropertiesView extends View {
 
     this.childViews = this.createCollection([
       this.formHeader,
-      this.titleStyleSwitchButton,
-      this.idInputView,
-      this.accessibleTitleInput,
+      this.idInputViewRow,
+      this.accessibleTitleInputRow,
+      this.switchButtonRow,
       this.actionRow,
     ]);
 
     this.setTemplate({
       tag: 'form',
       attributes: {
-        class: ['ck', 'ck-accordion-form', 'ck-accordion--properties-form'],
+        class: [
+          'ck',
+          'ck-accordion-form',
+          'ck-accordion-properties-form',
+          'uw-branded-component-form',
+        ],
         tabindex: '-1',
       },
       children: this.childViews,
@@ -94,6 +109,15 @@ export default class UwBootstrapAccordionPropertiesView extends View {
     this.childViews.first.focus();
   }
 
+  _createInputText(label) {
+    const labeledInput = new LabeledFieldView(
+      this.locale,
+      createLabeledInputText
+    );
+    labeledInput.label = label;
+    return labeledInput;
+  }
+
   _createIdInput() {
     const t = this.locale.t;
     const labeledInput = new LabeledFieldView(
@@ -102,9 +126,6 @@ export default class UwBootstrapAccordionPropertiesView extends View {
     );
 
     labeledInput.label = t('Accordion ID');
-    labeledInput.class = 'ck-labeled-field-view_full-width';
-
-    // labeledInput.fieldView.bind('value').to(this, 'idInputView');
 
     return labeledInput;
   }
@@ -117,9 +138,6 @@ export default class UwBootstrapAccordionPropertiesView extends View {
     );
 
     labeledInput.label = t('Accessible name');
-    labeledInput.class = 'ck-labeled-field-view_full-width';
-
-    // console.log(labeledInput.value);
 
     return labeledInput;
   }
@@ -131,7 +149,6 @@ export default class UwBootstrapAccordionPropertiesView extends View {
     switchButton.set({
       withText: true,
       label: label,
-      // isOn: isOn,
       isToggleable: true,
     });
 

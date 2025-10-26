@@ -103,3 +103,30 @@
 		.collapse, .collapsing { padding: 20px 20px 10px; }
 	}
 }
+
+/* UW Branded Component form styles. These are overrides of ck-editor defaults. */
+.ck-balloon-panel {
+
+  .uw-branded-component-form {
+    /* padding: 1em; */
+
+    .ck {
+      .ck-button {
+        &.ck-switchbutton {
+          /* margin-block: 0.5em; */
+          cursor: pointer;
+          flex-direction: column;
+          justify-content: center;
+
+          .ck-button__label {
+            margin-right: 0;
+          }
+
+          .ck-button__toggle {
+            margin-left: 0;
+          }
+        }
+      }
+    }
+  }
+}

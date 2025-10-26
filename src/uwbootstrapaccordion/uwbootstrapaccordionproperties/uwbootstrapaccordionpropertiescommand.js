@@ -69,6 +69,14 @@ export class UwBootstrapAccordionPropertiesCommand extends Command {
         );
       }
 
+      if (values.uwBootstrapAccordionTitleWeight) {
+        writer.setAttribute(
+          'uwBootstrapAccordionTitleWeight',
+          values.uwBootstrapAccordionTitleWeight,
+          uwBootstrapAccordionEl
+        );
+      }
+
       // The Accessible Title is the first child in the schema. Get it.
       const uwBootstrapAccordionAccessibleTitleEl =
         uwBootstrapAccordionEl.getChild(0);

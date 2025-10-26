@@ -66,7 +66,7 @@ export default class UwBootstrapAccordionItemPropertiesView extends View {
     // Action row.
     this.actionRow = new FormRowView(locale, {
       children: [this.saveButtonView, this.cancelButtonView],
-      class: 'ck-accordion-item-proerties-form__action-row',
+      class: 'ck-accordion-item-properties-form__action-row',
     });
 
     // Delegate ButtonView#execute to FormView#cancel.
@@ -84,7 +84,12 @@ export default class UwBootstrapAccordionItemPropertiesView extends View {
     this.setTemplate({
       tag: 'form',
       attributes: {
-        class: ['ck', 'ck-accordion-form', 'ck-accortion-item-properties-form'],
+        class: [
+          'ck',
+          'ck-accordion-form',
+          'ck-accortion-item-properties-form',
+          'uw-branded-component-form',
+        ],
         tabindex: '-1',
       },
       children: this.childViews,

@@ -53,7 +53,6 @@ export const createBootstrapAccordionItem = (writer) => {
   const bootstrapAccordionBody = writer.createElement(
     'uwBootstrapAccordionBody'
   );
-
   const placeholderButtonText = writer.createText(
     'Put your accordion button text here'
   );

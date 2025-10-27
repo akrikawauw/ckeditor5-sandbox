@@ -2,20 +2,13 @@ import {
   ContextualBalloon,
   Plugin,
   ButtonView,
-  IconTableProperties,
   clickOutsideHandler,
-  ViewPosition,
   IconInsertMergeField,
-  ViewDocumentSelection,
-  LabeledFieldView,
 } from 'ckeditor5';
 import UwBootstrapAccordionPropertiesView from './uwbootstrapaccordionpropertiesview';
 import {
   _getSelectedAccordionWidget,
   _getSelectedAccordionModelElement,
-  getSelectedAccordionWidget,
-  getAccordionWidgetAncestor,
-  findElement,
 } from '../uwbootstrapaccordionutils';
 
 export default class UwBootstrapAccordionPropertiesUI extends Plugin {
@@ -28,11 +21,6 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
    */
   constructor(editor) {
     super(editor);
-
-    // editor.config.define('uwBootstrapAccordion.accordionProperties', {
-    //   id: 'putidhere',
-    //   accessibleTitleInput: 'put accessible title here',
-    // });
   }
 
   /**
@@ -86,8 +74,8 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
 
     // Destroy created UI components as they are not automatically destroyed.
     // See https://github.com/ckeditor/ckeditor5/issues/1341.
-    if (this.view) {
-      this.view.destroy();
+    if (this.propertiesFormView) {
+      this.propertiesFormView.destroy();
     }
   }
 
@@ -266,6 +254,9 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
    * Returns `true` when the {@link #view} is the visible in the {@link #_balloon}.
    */
   _isViewVisible() {
-    return !this.view && this._balloon.visibleView === this.view;
+    return (
+      !this.propertiesFormView &&
+      this._balloon.visibleView === this.propertiesFormView
+    );
   }
 }

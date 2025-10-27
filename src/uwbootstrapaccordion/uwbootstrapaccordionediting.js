@@ -6,6 +6,7 @@ import { Plugin, Widget, toWidget, toWidgetEditable, uid } from 'ckeditor5';
 import { InsertUwBootstrapAccordionCommand } from './insertuwbootstrapaccordioncommand';
 import { InsertUwBootstrapAccordionItemCommand } from './insertuwbootstrapaccordionitemcommand';
 import { UwBootstrapAccordionPropertiesCommand } from './uwbootstrapaccordionproperties/uwbootstrapaccordionpropertiescommand';
+import { UwBootstrapAccordionItemPropertiesCommand } from './uwbootstrapaccordionitemproperties/uwbootstrapaccordionitempropertiescommand';
 
 export default class UwBootstrapAccordionEditing extends Plugin {
   static get requires() {
@@ -31,6 +32,11 @@ export default class UwBootstrapAccordionEditing extends Plugin {
     this.editor.commands.add(
       'uwBootstrapAccordionProperties',
       new UwBootstrapAccordionPropertiesCommand(this.editor)
+    );
+
+    this.editor.commands.add(
+      'uwBootstrapAccordionItemProperties',
+      new UwBootstrapAccordionItemPropertiesCommand(this.editor)
     );
   }
   /*
@@ -72,7 +78,14 @@ export default class UwBootstrapAccordionEditing extends Plugin {
       <div class="screen-reader-text">Accessible Accordion</div> <uwBootstrapAccordionAccessibleTitle/>
       <div class="card" id="top"> <uwBootstrapAccordionItem/>
         <div class="card-header" id="collapse-0-header"> <uwBootstrapAccordionHeader/>
-          <h3 class="mb-0"><button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-0" aria-expanded="false" aria-controls="collapse-0"><span class="btn-text">Sleep over your phone and make cute snoring noises touch water with paw then recoil in horror</span><span class="arrow-box"><span class="arrow"></span></span></button></h3>
+          <h3 class="mb-0">
+            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-0" aria-expanded="false" aria-controls="collapse-0">
+              <span class="btn-text">Sleep over your phone and make cute snoring noises touch water with paw then recoil in horror</span> <uwBootstrapAccordionButtonText />
+              <span class="arrow-box">
+                <span class="arrow"></span>
+              </span>
+            </button> <uwBootstrapAccordionButton />
+          </h3>
         </div>
         <div id="collapse-0" class="collapse " aria-labelledby="collapse-0-header" data-parent="#aa1" role="region">
           <p>Shred all toilet paper and spread around the house bird bird bird bird bird bird human why take bird out i could have eaten that sleep in the bathroom sink. Refuse to drink water except out of someone’s glass fall asleep on the washing machine but present belly, scratch hand when stroked yet what a cat-ass-trophy! for pet me pet me don’t pet me. Chew iPad power cord furrier and even more furrier hairball. Dismember a mouse and then regurgitate parts of it on the family room floor make it to the carpet before i vomit mmmmmm. Purrr purr littel cat, little cat purr purr caticus cuteicus yet intrigued by the shower sit on human they not getting up ever.</p>
@@ -129,6 +142,11 @@ export default class UwBootstrapAccordionEditing extends Plugin {
         'uwBootstrapAccordionHeading',
         'uwBootstrapAccordionCollapse',
       ],
+      allowAttributes: [
+        'uwBootstrapAccordionItemId',
+        'uwBootstrapAccordionItemButtonText',
+        'uwBootstrapAccordionItemCollapse',
+      ],
     });
 
     schema.register('uwBootstrapAccordionHeading', {
@@ -166,13 +184,6 @@ export default class UwBootstrapAccordionEditing extends Plugin {
 
       // Allow content which is allowed in blocks (i.e. text with attributes).
       allowAttributes: ['buttonText'],
-    });
-
-    schema.register('uwBootstrapAccordionButtonArrow', {
-      isInline: true,
-      allowIn: 'uwBootstrapAccordionButton',
-      // allowChildren: ['$text'],
-      allowAttributes: true,
     });
 
     schema.register('uwBootstrapAccordionCollapse', {
@@ -221,8 +232,6 @@ export default class UwBootstrapAccordionEditing extends Plugin {
       model: 'uwBootstrapAccordionId',
       view: 'id',
     });
-
-    conversion.elementToAttribute;
 
     conversion.for('upcast').add((dispatcher) => {
       // Look for every accordion.
@@ -368,6 +377,10 @@ export default class UwBootstrapAccordionEditing extends Plugin {
         classes: 'card',
       },
     });
+    conversion.attributeToAttribute({
+      model: 'uwBootstrapAccordionItemId',
+      view: 'id',
+    });
 
     // uwBootstrapAccordionHeading converters
     conversion.for('upcast').elementToElement({
@@ -396,122 +409,6 @@ export default class UwBootstrapAccordionEditing extends Plugin {
         });
       },
     });
-
-    // conversion.for('upcast').add((dispatcher) => {
-    //   dispatcher.on('element:div', (evt, data, conversionApi) => {
-    //     // Get all the necessary items from the conversion API object.
-    //     const {
-    //       consumable,
-    //       writer,
-    //       safeInsert,
-    //       convertChildren,
-    //       updateConversionResult,
-    //     } = conversionApi;
-    //     if (
-    //       consumable.consume(data.viewItem, {
-    //         name: true,
-    //         classes: 'card-header',
-    //       })
-    //     ) {
-    //       const modelElement = writer.createElement(
-    //         'uwBootstrapAccordionHeading',
-    //         [writer.createElement('h3', { class: 'mb-0' })]
-    //       );
-    //       // Forces insertion and conversion of a clean
-    //       // `uwBootstrapAccordionHeading` model element.
-    //       if (safeInsert(modelElement, data.modelCursor)) {
-    //         convertChildren(data.viewItem, modelElement);
-    //         updateConversionResult(modelElement, data);
-    //       }
-    //     }
-    //   });
-    // });
-    // conversion.for('dataDowncast').elementToElement({
-    //   model: 'uwBootstrapAccordionHeading',
-    //   view: {
-    //     name: 'div',
-    //     classes: 'card-header',
-    //   },
-    // });
-    // conversion.for('editingDowncast').elementToStructure({
-    //   model: 'uwBootstrapAccordionHeading',
-    //   view: (modelElement, conversionApi) => {
-    //     const { writer } = conversionApi;
-    //     const headingViewElement = writer.createContainerElement(
-    //       'h3',
-    //       { class: 'mb-0' },
-    //       [writer.createSlot()]
-    //     );
-    //     return writer.createContainerElement('div', { class: 'card-header' }, [
-    //       headingViewElement,
-    //     ]);
-    //   },
-    // });
-
-    // uwBootstrapAccordionButton
-    // TODO: dig into how this model element should be cast in all ways. it's complex.
-
-    // conversion.for('upcast').add(dispatcher => {
-    //   dispatcher.on('element:button', (evt, data, conversionApi) => {
-    //     // Get all the necessary items from the conversion API object.
-    //     const {
-    //       consumable,
-    //       writer,
-    //       safeInsert,
-    //       convertChildren,
-    //       updateConversionResult
-    //     } = conversionApi;
-    //     console.log(data.viewItem);
-    //     const wrapper = { name: true, classes: ['btn btn-link']};
-    //     const innerWrapper = {name: true, class: 'btn-text'};
-    //     // Get the first child element.
-    //     console.log(innerWrapper)
-    //     const firstChildItem = data.viewItem.getChild( 0 );
-    //     // Check if the first element is a <div>.
-    //     if ( !firstChildItem.is( 'element', 'span' ) ) {
-    //       return;
-    //     }
-    //     const modelElement = writer.createElement('uwBootstrapAccordionButton');
-    //     // if (consumable.consume(data.viewItem, wrapper)) {
-    //
-    //
-    //       // console.log(modelElement);
-    //       // Forces insertion and conversion of a clean
-    //       // `uwBootstrapAccordionHeading` model element.
-    //       if (safeInsert(modelElement, data.modelCursor)) {
-    //         console.log(firstChildItem)
-    //         consumable.consume( data.viewItem, wrapper);
-    //         consumable.consume( firstChildItem, innerWrapper);
-    //         convertChildren(firstChildItem, modelElement);
-    //         console.log(modelElement);
-    //         updateConversionResult(modelElement, data);
-    //
-    //       }
-    //
-    //   });
-    // });
-    //   model: ( viewElement, { writer } ) => {
-    //     return writer.createElement( 'uwBootstrapAccordionButton', { expanded: viewElement.getAttribute( 'aria-expanded' ) } );
-    //   },
-    //   // model: 'uwBootstrapAccordionButton',
-    //   view: {
-    //     name: 'button',
-    //     classes: ['btn', 'btn-link'],
-    //     attributes: [ 'data-toggle', 'data-target', 'aria-expanded', 'aria-controls'],
-    //   },
-    // });
-
-    //   editor.conversion
-    // .for( 'upcast' )
-    // .elementToElement( {
-    // 	view: {
-    // 		name: 'p',
-    // 		classes: 'heading'
-    // 	},
-    // 	model: ( viewElement, { writer } ) => {
-    // 		return writer.createElement( 'heading' );
-    // 	}
-    // } );
 
     conversion.for('upcast').elementToElement({
       model: (viewElement, { writer }) => {

@@ -68,6 +68,11 @@
 							padding: 6px;
 							transform: rotate(-45deg);
 							transition: transform .5s ease;
+
+              /* To prevent CKEditor <br> filler from taking up space */
+              br[data-cke-filler='true'] {
+                display: none;
+              }
 						}
 					}
 
@@ -83,12 +88,8 @@
 								left: 4px;
 								top: -2px;
 								transition: transform .5s ease;
-
-                /* For CKEditor */
-                br {
-                  /* TODO */
-                }
 							}
+
 						}
 					}
 

@@ -17,8 +17,6 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
    */
   constructor(editor) {
     super(editor);
-
-    editor.config.define('uwBootstrapAccordion.accordionItemProperties', {});
   }
 
   /**
@@ -32,6 +30,9 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
     editor.ui.componentFactory.add('accordionItemProperties', () =>
       this._createAccordionItemPropertiesButton()
     );
+
+    this._addToolbarButton();
+    this.itemPropertiesFormView = this._createItemPropertiesView();
   }
 
   /**
@@ -39,21 +40,26 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
    *
    * @internal
    */
-  _createAccordionItemPropertiesButton() {
+  _addToolbarButton() {
     const editor = this.editor;
     const t = editor.t;
 
-    const view = new ButtonView(editor.locale);
+    editor.ui.componentFactory.add('accordionItemProperties', (locale) => {
+      const buttonView = new ButtonView(editor.locale);
 
-    view.set({
-      label: t('Accordion item properties'),
-      icon: IconTableProperties,
-      tooltip: true,
+      buttonView.set({
+        label: t('Accordion item properties'),
+        icon: IconTableProperties,
+        tooltip: true,
+      });
+
+      const command = editor.commands.get('uwBootstrapAccordionItemProperties');
+      buttonView.bind('isEnabled').to(command, 'isEnabled');
+
+      this.listenTo(buttonView, 'execute', () => this._showView());
+
+      return buttonView;
     });
-
-    this.listenTo(view, 'execute', () => this._showView());
-
-    return view;
   }
   /**
    * @inheritDoc
@@ -63,62 +69,44 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
 
     // Destroy created UI components as they are not automatically destroyed.
     // See https://github.com/ckeditor/ckeditor5/issues/1341.
-    if (this.view) {
-      this.view.destroy();
+    if (this.itemPropertiesFormView) {
+      this.itemPropertiesFormView.destroy();
     }
   }
 
-  _createAccordionItemPropertiesView() {
+  _createItemPropertiesView() {
     const editor = this.editor;
-    const config = editor.config.get(
-      'uwBootstrapAccordion.accordionItemProperties'
-    );
-    // Get configuration settings for all things here. TODO:
-
-    const view = new UwBootstrapAccordionItemPropertiesView(editor.locale, {
-      // assign values from config here.
-    });
     const t = editor.t;
+    const command = editor.config.get('uwBootstrapAccordionItemProperties');
+    const itemPropertiesFormView = new UwBootstrapAccordionItemPropertiesView(
+      editor.locale
+    );
 
-    // Render the view so its #element is available for the clickOutsideHandler.
-    view.render();
+    this.listenTo(itemPropertiesFormView, 'submit', () => {
+      let values = {
+        uwBootstrapAccordionItemId:
+          itemPropertiesFormView.idInput.fieldView.element.value,
+      };
+      // console.log(values);
+      this.editor.execute('uwBootstrapAccordionItemProperties', values);
 
-    this.listenTo(view, 'submit', () => {
+      // Hide the form view after submit.
       this._hideView();
     });
 
-    this.listenTo(view, 'cancel', () => {
+    this.listenTo(itemPropertiesFormView, 'cancel', () => {
       this._hideView();
     });
 
     // Close on click outside of balloon panel element.
     clickOutsideHandler({
-      emitter: view,
+      emitter: itemPropertiesFormView,
       activator: () => this._isViewInBalloon,
       contextElements: [this._balloon.view.element],
       callback: () => this._hideView(),
     });
 
-    return view;
-  }
-
-  _showView() {
-    const editor = this.editor;
-
-    // const viewAccordionItem = _getSelectedAccordionWidget(
-    //   editor.editing.view.document.selection
-    // );
-
-    this.view = this._createAccordionItemPropertiesView();
-
-    this.listenTo(editor.ui, 'update', () => {
-      this._updateView();
-    });
-
-    this._balloon.add({
-      view: this.view,
-      position: this._getBalloonPositionData(),
-    });
+    return itemPropertiesFormView;
   }
 
   _getBalloonPositionData() {
@@ -135,6 +123,70 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
     };
   }
 
+  _addFormView() {
+    this._balloon.add({
+      view: this.itemPropertiesFormView,
+      position: this._getBalloonPositionData(),
+    });
+
+    const command = this.editor.commands.get(
+      'uwBootstrapAccordionItemProperties'
+    );
+
+    const modelToFormFields = {
+      uwBootstrapAccordionItemId: 'idInput',
+      // uwBootstrapAccordionAccessibleTitle: 'accessibleTitleInput',
+    };
+
+    // Handle text input fields.
+    Object.entries(modelToFormFields).forEach(([modelName, formElName]) => {
+      const formEl = this.itemPropertiesFormView[formElName];
+      console.log(formEl);
+      // Needed to display a placeholder of the elements being focused before.
+      formEl.focus();
+
+      const isEmpty =
+        !command.value ||
+        !command.value[modelName] ||
+        command.value[modelName] === '';
+
+      // TODO - maybe set the id value here instead of in insertuwBootstrapAccorrdionCommand
+
+      if (!isEmpty) {
+        formEl.fieldView.element.value = command.value[modelName];
+      }
+      formEl.set('isEmpty', isEmpty);
+    });
+
+    // Handle the switch input fields.
+    // const modelToSwitchButtons = {
+    //   uwBootstrapAccordionTitleStyle: 'titleStyleSwitchButton',
+    //   uwBootstrapAccordionTitleWeight: 'titleWeightSwitchButton',
+    // };
+
+    // this.itemPropertiesFormView;
+    // Object.entries(modelToSwitchButtons).forEach(([modelName, formElName]) => {
+    //   const formEl = this.itemPropertiesFormView[formElName];
+    //   // console.log(formEl);
+    //   formEl.focus();
+    //   let isOn = false;
+    //   console.log(formElName);
+    //   // Needed to display a placeholder of the elements being focused before.
+    //   if (formElName === 'titleStyleSwitchButton') {
+    //     isOn = command.value[modelName] === 'uppercase';
+    //   } else if (formElName === 'titleWeightSwitchButton') {
+    //     isOn = command.value[modelName] === 'bold';
+    //   }
+    //   formEl.set('isOn', isOn);
+    // });
+  }
+
+  /**
+   * Shows the UI.
+   */
+  _showView() {
+    this._addFormView();
+  }
   /**
    * Removes the {@link #view} from the {@link #_balloon}.
    */
@@ -147,9 +199,9 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
 
     // Blur any input element before removing it from DOM to prevent issues in some browsers.
     // See https://github.com/ckeditor/ckeditor5/issues/1501.
-    // this.view.saveButtonView.focus();
+    // this.propertiesItemFormView.saveButtonView.focus();
 
-    this._balloon.remove(this.view);
+    this._balloon.remove(this.itemPropertiesFormView);
 
     // Make sure the focus is not lost in the process by putting it directly
     // into the editing view.
@@ -163,7 +215,8 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
     const editor = this.editor;
     const viewDocument = editor.editing.view.document;
 
-    if (!_getSelectedAccordionWidget(viewDocument.selection)) {
+    // if (!_getSelectedAccordionWidget(viewDocument.selection)) {
+    if (!findElement(viewDocument.selection, 'uwBootstrapAccordionItem')) {
       this._hideView();
     } else if (this._isViewVisible) {
       repositionContextualBalloon(editor, 'uwBootstrapAccordionItem');

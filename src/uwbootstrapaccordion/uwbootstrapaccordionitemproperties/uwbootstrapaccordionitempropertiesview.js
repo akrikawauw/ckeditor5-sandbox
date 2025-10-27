@@ -1,5 +1,3 @@
-// uwbootstrapaccordion/uwbootstrapaccordion.js
-
 import {
   View,
   LabeledFieldView,
@@ -8,6 +6,7 @@ import {
   FormHeaderView,
   FormRowView,
   ButtonView,
+  SwitchButtonView,
   IconCheck,
   IconCancel,
   submitHandler,
@@ -17,33 +16,32 @@ export default class UwBootstrapAccordionItemPropertiesView extends View {
   constructor(locale) {
     super(locale);
 
-    // What we need.
-    // Id for accordion heading.
-    // Id for accordion collapse.
-    // Collapsed/open default state switch.
-    // Title for accordion button / heading.
-
-    this.idInputView = this._createInputText('Accordion heading id');
-    this.titleInputView = this._createInputText('Accordion collapse id');
-    this.accordionHeader = this._createInputTextArea('Accordion button title');
+    this.idInput = this._createInputText('Accordion section id');
+    this.accordionButtonText = this._createInputTextArea(
+      'Accordion section title'
+    );
+    this.openCollapseSwitchButton = this._createSwitchButton(
+      'Open by default?',
+      false
+    );
 
     // Form header.
     this.formHeader = new FormHeaderView(locale, {
-      label: this.t('Accordion item properties'),
+      label: this.t('Accordion section properties'),
       class: 'ck ck-form__header',
     });
 
     // Text alignment row.
-    this.myRow = new FormRowView(locale, {
+    this.idInputRow = new FormRowView(locale, {
       labelView: 'label is here',
-      children: [this.idInputView, this.titleInputView],
+      children: [this.idInput],
       class: 'ck ck-form__row',
     });
 
     // Text alignment row.
-    this.myAccordionButton = new FormRowView(locale, {
+    this.accordionButtonTextRow = new FormRowView(locale, {
       labelView: 'label is here',
-      children: [this.accordionHeader],
+      children: [this.accordionButtonText],
       class: 'ck ck-form__row',
     });
 
@@ -63,6 +61,11 @@ export default class UwBootstrapAccordionItemPropertiesView extends View {
       'ck-button-cancel'
     );
 
+    this.switchButtonRow = new FormRowView(locale, {
+      children: [this.openCollapseSwitchButton],
+      class: 'ck-accordion-properties-form__switch-button-row',
+    });
+
     // Action row.
     this.actionRow = new FormRowView(locale, {
       children: [this.saveButtonView, this.cancelButtonView],
@@ -74,10 +77,9 @@ export default class UwBootstrapAccordionItemPropertiesView extends View {
 
     this.childViews = this.createCollection([
       this.formHeader,
-      this.myAccordionButton,
-      this.myRow,
-      // this.idInputView,
-      // this.titleInputView,
+      this.accordionButtonTextRow,
+      this.idInputRow,
+      this.switchButtonRow,
       this.actionRow,
     ]);
 
@@ -96,6 +98,16 @@ export default class UwBootstrapAccordionItemPropertiesView extends View {
     });
   }
 
+  render() {
+    super.render();
+
+    // Submit the form when the user clicked the save button
+    // or pressed enter in the input.
+    submitHandler({
+      view: this,
+    });
+  }
+
   focus() {
     this.childViews.first.focus();
   }
@@ -107,6 +119,23 @@ export default class UwBootstrapAccordionItemPropertiesView extends View {
     );
     labeledInput.label = label;
     return labeledInput;
+  }
+
+  _createSwitchButton(label, isOn) {
+    const t = this.locale.t;
+    const switchButton = new SwitchButtonView(this.locale);
+
+    switchButton.set({
+      withText: true,
+      label: label,
+      isToggleable: true,
+    });
+
+    switchButton.on('execute', () => {
+      switchButton.isOn = !switchButton.isOn;
+    });
+
+    return switchButton;
   }
 
   _createInputTextArea(label) {

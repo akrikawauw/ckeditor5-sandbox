@@ -3,7 +3,6 @@ import {
   _getSelectedAccordionModelElement,
   _getSelectedAccordionWidget,
   findElement,
-  getSelectedAccordionWidget,
 } from '../uwbootstrapaccordionutils';
 
 export class UwBootstrapAccordionPropertiesCommand extends Command {

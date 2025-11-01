@@ -106,13 +106,23 @@
 }
 
 /* UW Branded Component form styles. These are overrides of ck-editor defaults. */
-.ck-balloon-panel {
+.ck-form {
 
-  .uw-branded-component-form {
+  &.uw-branded-component-form {
     /* padding: 1em; */
-
+    width: 275px;
     .ck {
-      .ck-button {
+      &.ck-input-text {
+        width: 100%;
+        flex-grow: 1;
+      }
+      &.ck-form__row {
+        display: flex;
+      }
+      &.ck-labeled-field-view {
+        flex-grow: 1;
+      }
+      &.ck-button {
         &.ck-switchbutton {
           /* margin-block: 0.5em; */
           cursor: pointer;

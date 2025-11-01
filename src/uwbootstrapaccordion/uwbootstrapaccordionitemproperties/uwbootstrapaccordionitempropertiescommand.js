@@ -22,19 +22,21 @@ export class UwBootstrapAccordionItemPropertiesCommand extends Command {
 
     this.value = {};
 
-    // Process accordionEl attributes
+    // Process uwBootstrapAccordionItemEl attributes.
     for (const [
       attrKey,
       attrValue,
     ] of uwBootstrapAccordionItemEl.getAttributes()) {
       this.value[attrKey] = attrValue;
-      // console.log('attributes', attrKey, attrValue);
+      console.log('ITEM attributes', attrKey, attrValue);
     }
 
-    // Get the first child and its data which will be the accessible title.
-    // const childEl = uwBootstrapAccordionEl.getChild(0);
-    // const childTextNode = childEl.getChild(0);
-    // this.value[childEl.name] = childTextNode._data;
+    // Get the uwBootstrapAccordionButtonText.
+    const childEl = uwBootstrapAccordionItemEl
+      .getChild(0)
+      .getChild(0)
+      .getChild(0);
+    this.value[childEl.name] = childEl.getChild(0)._data;
 
     console.log('REFRESH', this.value);
   }
@@ -55,7 +57,7 @@ export class UwBootstrapAccordionItemPropertiesCommand extends Command {
       // console.log(uwBootstrapAccordionEl);
 
       if (values.uwBootstrapAccordionItemId) {
-        // console.log('values.id in execute', values.uwBootstrapAccordionId);
+        console.log('values.id in execute', values.uwBootstrapAccordionId);
         // Set the id for the uwBootstrapAccordion.
         writer.setAttribute(
           'uwBootstrapAccordionItemId',
@@ -64,13 +66,13 @@ export class UwBootstrapAccordionItemPropertiesCommand extends Command {
         );
       }
 
-      // if (values.uwBootstrapAccordionTitleStyle) {
-      //   writer.setAttribute(
-      //     'uwBootstrapAccordionTitleStyle',
-      //     values.uwBootstrapAccordionTitleStyle,
-      //     uwBootstrapAccordionEl
-      //   );
-      // }
+      if (values.uwBootstrapAccordionButtonText) {
+        writer.setAttribute(
+          'uwBootstrapAccordionButtonText',
+          values.uwBootstrapAccordionButtonText,
+          uwBootstrapAccordionItemEl
+        );
+      }
 
       // if (values.uwBootstrapAccordionTitleWeight) {
       //   writer.setAttribute(
@@ -80,36 +82,38 @@ export class UwBootstrapAccordionItemPropertiesCommand extends Command {
       //   );
       // }
 
-      // The Accessible Title is the first child in the schema. Get it.
-      // const uwBootstrapAccordionAccessibleTitleEl =
-      //   uwBootstrapAccordionEl.getChild(0);
+      // The uwBootstrapAccordionButtonText is the third child in the schema. Get it.
+      const uwBootstrapAccordionButtonTextEl = uwBootstrapAccordionItemEl
+        .getChild(0)
+        .getChild(0)
+        .getChild(0);
 
-      // if (values.uwBootstrapAccordionAccessibleTitle) {
-      //   console.log(
-      //     'values.uwBootstrapAccordionAccessibleTitle in execute',
-      //     values.uwBootstrapAccordionAccessibleTitle
-      //   );
-      //   // Determine the position of the current text in <uwBootstrapAccordionAccessibleTitle>.
-      //   const insertPosition = writer.createPositionAt(
-      //     uwBootstrapAccordionAccessibleTitleEl,
-      //     0
-      //   );
-      //   const endPosition = writer.createPositionAt(
-      //     uwBootstrapAccordionAccessibleTitleEl,
-      //     'end'
-      //   );
-      //   const rangeToPurge = writer.createRange(insertPosition, endPosition);
+      if (values.uwBootstrapAccordionButtonText) {
+        console.log(
+          'values.uwBootstrapAccordionButtonText in execute',
+          values.uwBootstrapAccordionButtonText
+        );
+        // Determine the position of the current text in <uwBootstrapAccordionAccessibleTitle>.
+        const insertPosition = writer.createPositionAt(
+          uwBootstrapAccordionButtonTextEl,
+          0
+        );
+        const endPosition = writer.createPositionAt(
+          uwBootstrapAccordionButtonTextEl,
+          'end'
+        );
+        const rangeToPurge = writer.createRange(insertPosition, endPosition);
 
-      // Remove the current text.
-      // writer.remove(rangeToPurge);
+        // Remove the current text.
+        writer.remove(rangeToPurge);
 
-      // Insert the text.
-      // writer.insertText(
-      //   values.uwBootstrapAccordionAccessibleTitle,
-      //   uwBootstrapAccordionAccessibleTitleEl,
-      //   'end'
-      // );
-      // }
+        // Insert the text.
+        writer.insertText(
+          values.uwBootstrapAccordionButtonText,
+          uwBootstrapAccordionButtonTextEl,
+          'end'
+        );
+      }
     });
   }
 }

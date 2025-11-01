@@ -1,4 +1,4 @@
-import { Command } from 'ckeditor5';
+import { Command, uid } from 'ckeditor5';
 
 export class InsertUwBootstrapAccordionItemCommand extends Command {
   execute(options = { positionOffset: 'before' }) {
@@ -33,7 +33,8 @@ export class InsertUwBootstrapAccordionItemCommand extends Command {
 
 export const createBootstrapAccordionItem = (writer) => {
   const bootstrapAccordionItem = writer.createElement(
-    'uwBootstrapAccordionItem'
+    'uwBootstrapAccordionItem',
+    { uwBootstrapAccordionItemId: uid() }
   );
   const bootstrapAccordionHeading = writer.createElement(
     'uwBootstrapAccordionHeading'

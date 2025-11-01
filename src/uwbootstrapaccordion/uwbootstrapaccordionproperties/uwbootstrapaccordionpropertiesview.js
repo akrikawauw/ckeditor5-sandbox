@@ -85,6 +85,7 @@ export default class UwBootstrapAccordionPropertiesView extends View {
       attributes: {
         class: [
           'ck',
+          'ck-form',
           'ck-accordion-form',
           'ck-accordion-properties-form',
           'uw-branded-component-form',

@@ -205,27 +205,6 @@ export default class UwBootstrapAccordionEditing extends Plugin {
   _defineConverters() {
     const conversion = this.editor.conversion;
 
-    // conversion.attributeToAttribute({
-    //   model: 'buttonType',
-    //   view: 'type',
-    // });
-    // conversion.attributeToAttribute({
-    //   model: 'buttonDataToggle',
-    //   view: 'data-toggle',
-    // });
-    // conversion.attributeToAttribute({
-    //   model: 'buttonDataTarget',
-    //   view: 'data-target',
-    // });
-    // conversion.attributeToAttribute({
-    //   model: 'buttonAriaExpanded',
-    //   view: 'aria-expanded',
-    // });
-    // conversion.attributeToAttribute({
-    //   model: 'buttonAriaControls',
-    //   view: 'aria-controls',
-    // });
-
     // <bootstrapAccordion> converters
     // TODO: explore using a dispatcher
     conversion.attributeToAttribute({
@@ -410,7 +389,16 @@ export default class UwBootstrapAccordionEditing extends Plugin {
       },
     });
 
+    // uwBootstrapAccordionButton converters
+
     conversion.for('upcast').elementToElement({
+      // model: (viewElement, { writer }) => {
+      //   const myAttributes = viewElement.getAttributes();
+      //   // console.log('upcast for justAButtonText', viewElement);
+      //   return writer.createElement('uwBootstrapAccordionButton', {
+      //     myAttributes,
+      //   });
+      // },
       model: (viewElement, { writer }) => {
         return writer.createElement('uwBootstrapAccordionButton');
       },
@@ -419,6 +407,7 @@ export default class UwBootstrapAccordionEditing extends Plugin {
         classes: ['mb-0'],
       },
     });
+    // uwBootstrapAccordionId: viewItem.getAttribute('id')
 
     conversion.for('dataDowncast').elementToStructure({
       model: 'uwBootstrapAccordionButton',
@@ -435,7 +424,7 @@ export default class UwBootstrapAccordionEditing extends Plugin {
         );
         const buttonViewElement = writer.createContainerElement(
           'button',
-          { class: 'btn btn-link' },
+          { class: 'btn btn-link collapse' },
           [slotForButtonViewElement, arrowBoxOuterSpanElement]
         );
 
@@ -460,7 +449,7 @@ export default class UwBootstrapAccordionEditing extends Plugin {
         );
         const buttonViewElement = writer.createContainerElement(
           'button',
-          { class: 'btn btn-link' },
+          { class: 'btn btn-link collapse', 'data-fudge': 'gola' },
           [slotForButtonViewElement, arrowBoxOuterSpanElement]
         );
 
@@ -469,6 +458,26 @@ export default class UwBootstrapAccordionEditing extends Plugin {
         ]);
       },
     });
+    // conversion.for('downcast').attributeToAttribute({
+    //   model: 'buttonType',
+    //   view: 'type',
+    // });
+    // conversion.attributeToAttribute({
+    //   model: 'buttonDataToggle',
+    //   view: 'data-toggle',
+    // });
+    // conversion.attributeToAttribute({
+    //   model: 'buttonDataTarget',
+    //   view: 'data-target',
+    // });
+    // conversion.attributeToAttribute({
+    //   model: 'buttonAriaExpanded',
+    //   view: 'aria-expanded',
+    // });
+    // conversion.attributeToAttribute({
+    //   model: 'buttonAriaControls',
+    //   view: 'aria-controls',
+    // });
 
     // uwBootstrapAccordionButtonText
     // <justAButtonText> converters
@@ -501,9 +510,12 @@ export default class UwBootstrapAccordionEditing extends Plugin {
         const span = viewWriter.createEditableElement('span', {
           class: 'btn-text',
         });
-        return toWidgetEditable(span, viewWriter, {
+        return toWidget(span, viewWriter, {
           label: 'Edit button text',
         });
+        // return toWidgetEditable(span, viewWriter, {
+        //   label: 'Edit button text',
+        // });
       },
     });
 

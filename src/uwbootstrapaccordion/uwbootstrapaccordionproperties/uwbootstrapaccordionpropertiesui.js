@@ -109,7 +109,7 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
         uwBootstrapAccordionTitleStyle: titleStyleValueForModel,
         uwBootstrapAccordionTitleWeight: titleWeightValueForModel,
       };
-      // console.log(values);
+      // console.log('Sending these values to command', values);
       this.editor.execute('uwBootstrapAccordionProperties', values);
 
       // Hide the form view after submit.
@@ -147,7 +147,8 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
     // Handle text input fields.
     Object.entries(modelToFormFields).forEach(([modelName, formElName]) => {
       const formEl = this.propertiesFormView[formElName];
-      // console.log(formEl);
+
+      console.log(formEl.fieldView.value);
       // Needed to display a placeholder of the elements being focused before.
       formEl.focus();
 
@@ -170,13 +171,13 @@ export default class UwBootstrapAccordionPropertiesUI extends Plugin {
       uwBootstrapAccordionTitleWeight: 'titleWeightSwitchButton',
     };
 
-    this.propertiesFormView;
+    // this.propertiesFormView;
     Object.entries(modelToSwitchButtons).forEach(([modelName, formElName]) => {
       const formEl = this.propertiesFormView[formElName];
       // console.log(formEl);
       formEl.focus();
       let isOn = false;
-      console.log(formElName);
+      // console.log(formElName);
       // Needed to display a placeholder of the elements being focused before.
       if (formElName === 'titleStyleSwitchButton') {
         isOn = command.value[modelName] === 'uppercase';

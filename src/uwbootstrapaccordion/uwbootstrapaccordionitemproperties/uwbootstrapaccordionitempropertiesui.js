@@ -86,6 +86,8 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
       let values = {
         uwBootstrapAccordionItemId:
           itemPropertiesFormView.idInput.fieldView.element.value,
+        uwBootstrapAccordionButtonText:
+          itemPropertiesFormView.accordionButtonText.fieldView.element.value,
       };
       // console.log(values);
       this.editor.execute('uwBootstrapAccordionItemProperties', values);
@@ -135,13 +137,13 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
 
     const modelToFormFields = {
       uwBootstrapAccordionItemId: 'idInput',
-      // uwBootstrapAccordionAccessibleTitle: 'accessibleTitleInput',
+      uwBootstrapAccordionButtonText: 'accordionButtonText',
     };
 
     // Handle text input fields.
     Object.entries(modelToFormFields).forEach(([modelName, formElName]) => {
       const formEl = this.itemPropertiesFormView[formElName];
-      console.log(formEl);
+      console.log(formElName, formEl);
       // Needed to display a placeholder of the elements being focused before.
       formEl.focus();
 

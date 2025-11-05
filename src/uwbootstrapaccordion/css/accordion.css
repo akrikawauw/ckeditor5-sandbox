@@ -3,7 +3,7 @@
  */
 
  .accordion {
-	margin-bottom: 40px;
+	/* margin-bottom: 40px; */
 
 	&:focus, &:focus:not(:focus-visible), &:focus-within {
 		box-shadow: 1px 1px 5px rgba(75, 46, 131, .7);
@@ -31,6 +31,7 @@
 
 			h3 {
 				margin-top: 0;
+        margin-bottom: 0;
 
 				button {
 					font-family: 'Encode Sans Compressed', sans-serif;
@@ -106,6 +107,9 @@
 }
 
 /* UW Branded Component form styles. These are overrides of ck-editor defaults. */
+.card.ck-widget {
+  margin: 0.5rem;
+}
 .ck-form {
 
   &.uw-branded-component-form {

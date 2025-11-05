@@ -12,7 +12,7 @@ export function _getSelectedAccordionWidget(selection) {
       .find((node) => node.is('element', 'div') && isAccordionWidget(node));
 
     if (accordion !== undefined && accordion.is('element')) {
-      console.log('is accordion', accordion);
+      // console.log('is accordion', accordion);
       return accordion;
     }
     return null;
@@ -31,7 +31,7 @@ export function getSelectedAccordionWidget(selection) {
 
 export function isAccordionWidget(element) {
   // console.log(element.hasClass('ckeditor5-uw-bootstrap-accordion__widget'));
-  console.log('checking for isAccordionWidget');
+  // console.log('checking for isAccordionWidget');
   // return element.hasClass('ckeditor5-uw-bootstrap-accordion__widget');
   return element.hasClass('accordion');
 }
@@ -189,10 +189,74 @@ export function findElement(modelSelection, modelName) {
   }
 }
 
+export function findModelElement(editor, parentElement, targetElement) {
+  let foundElement = null;
+
+  for (const { item } of editor.model.createRangeIn(parentElement)) {
+    if (item.is('element', targetElement)) {
+      foundElement = item;
+    }
+    if (item.is('element') && item !== parentElement) {
+      const nestedElement = findModelElement(editor, item, targetElement);
+      if (nestedElement) {
+        foundElement = nestedElement;
+        break;
+      }
+    }
+  }
+  return foundElement;
+}
+
 export function repositionContextualBalloon(editor, target) {
   const balloon = editor.plugins.get('ContextualBalloon');
   const selection = editor.editing.view.document.selection;
   let position;
   console.log('reposition');
   return;
+}
+
+export function createAccordionItemId() {
+  // Find all item ids
+  const range = editor.model.createRangeIn(editor.model.document.getRoot());
+  const accordionItemIds = [];
+  let accordionItemId;
+
+  for (const value of range.getWalker()) {
+    if (
+      value.item.name === 'uwBootstrapAccordionItem' &&
+      value.item.hasAttribute('uwBootstrapAccordionItemId')
+    ) {
+      accordionItemIds.push(
+        value.item.getAttribute('uwBootstrapAccordionItemId')
+      );
+    }
+  }
+  console.log('accordionItemIds', accordionItemIds);
+  // Find any that match pattern 'bootstrap-accordion--1234'.
+  const possibleMatches = accordionItemIds.filter((item) =>
+    item.match(/^accordion-item-\d+/g)
+  );
+  console.log('possible matches A', possibleMatches);
+
+  // If there are any matches, iterate through them and get rid of anything,
+  // but numbers.
+  if (possibleMatches.length) {
+    const justNumbers = possibleMatches.map((accordionItemId) =>
+      accordionItemId.replace(/\D+/, '')
+    );
+    // Sort the numbers.
+    justNumbers.sort((a, b) => a - b);
+    // console.log(justNumbers);
+    // Take the last number (the highest).
+    const lastNumber = Number(justNumbers[justNumbers.length - 1]);
+
+    // We go with this highest number and add 1.
+    console.log(lastNumber);
+    accordionItemId = lastNumber + 1;
+    // accordionItemId = `bootstrap-accordion-collapse--${lastNumber + 1}`;
+  } else {
+    // Otherwise, this is the first and we'll start with zero index.
+    accordionItemId = 0;
+  }
+  return accordionItemId;
 }

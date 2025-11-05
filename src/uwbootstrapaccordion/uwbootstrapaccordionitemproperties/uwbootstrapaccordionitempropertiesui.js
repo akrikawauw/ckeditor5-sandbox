@@ -83,13 +83,22 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
     );
 
     this.listenTo(itemPropertiesFormView, 'submit', () => {
+      // Get our value for the switch button.
+      // const collapseStateForModel =
+      //   itemPropertiesFormView.openCollapseSwitchButton.isOn === true ? true : false;
+      //     ? 'show'
+      //     : 'collapsed';
+
       let values = {
         uwBootstrapAccordionItemId:
           itemPropertiesFormView.idInput.fieldView.element.value,
         uwBootstrapAccordionButtonText:
           itemPropertiesFormView.accordionButtonText.fieldView.element.value,
+        uwBootstrapAccordionCollapseState:
+          itemPropertiesFormView.openCollapseSwitchButton.isOn,
+        uwBootstrapAccordionButtonCollapseState:
+          itemPropertiesFormView.openCollapseSwitchButton.isOn,
       };
-      // console.log(values);
       this.editor.execute('uwBootstrapAccordionItemProperties', values);
 
       // Hide the form view after submit.
@@ -152,35 +161,29 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
         !command.value[modelName] ||
         command.value[modelName] === '';
 
-      // TODO - maybe set the id value here instead of in insertuwBootstrapAccorrdionCommand
-
       if (!isEmpty) {
         formEl.fieldView.element.value = command.value[modelName];
       }
       formEl.set('isEmpty', isEmpty);
     });
 
-    // Handle the switch input fields.
-    // const modelToSwitchButtons = {
-    //   uwBootstrapAccordionTitleStyle: 'titleStyleSwitchButton',
-    //   uwBootstrapAccordionTitleWeight: 'titleWeightSwitchButton',
-    // };
+    // Handle the switch input field(s).
+    const modelToSwitchButtons = {
+      uwBootstrapAccordionCollapseState: 'openCollapseSwitchButton',
+      uwBootstrapAccordionButtonCollapseState: 'openCollapseSwitchButton',
+    };
 
-    // this.itemPropertiesFormView;
-    // Object.entries(modelToSwitchButtons).forEach(([modelName, formElName]) => {
-    //   const formEl = this.itemPropertiesFormView[formElName];
-    //   // console.log(formEl);
-    //   formEl.focus();
-    //   let isOn = false;
-    //   console.log(formElName);
-    //   // Needed to display a placeholder of the elements being focused before.
-    //   if (formElName === 'titleStyleSwitchButton') {
-    //     isOn = command.value[modelName] === 'uppercase';
-    //   } else if (formElName === 'titleWeightSwitchButton') {
-    //     isOn = command.value[modelName] === 'bold';
-    //   }
-    //   formEl.set('isOn', isOn);
-    // });
+    // this.propertiesFormView;
+    Object.entries(modelToSwitchButtons).forEach(([modelName, formElName]) => {
+      console.log(this.itemPropertiesFormView);
+      const formEl = this.itemPropertiesFormView[formElName];
+      console.log(formEl);
+      formEl.focus();
+      let isOn = false;
+      // Needed to display a placeholder of the elements being focused before.
+      isOn = command.value[modelName] === 'show';
+      formEl.set('isOn', isOn);
+    });
   }
 
   /**
@@ -224,25 +227,4 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
       repositionContextualBalloon(editor, 'uwBootstrapAccordionItem');
     }
   }
-
-  /**
-   * Creates a callback that when executed upon {@link #view view's} property change
-   * executes a related editor command with the new property value.
-   *
-   * If new value will be set to the default value, the command will not be executed.
-   *
-   * @param commandName The command that will be executed.
-   */
-  // _getPropertyChangeCallback(commandName) {
-  //   return (EventInfo, propertyName, newValue) => {
-  //     // Do not execute the command on initial call (opening the table properties view).
-  //     if (this._isReady) {
-  //       return;
-  //     }
-
-  //     this.editor.execute(commandName, {
-  //       value: newValue,
-  //     });
-  //   };
-  // }
 }

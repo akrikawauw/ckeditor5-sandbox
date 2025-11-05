@@ -1,4 +1,6 @@
 import { Command, uid } from 'ckeditor5';
+import { UwBootstrapAccordionItemPropertiesCommand } from './uwbootstrapaccordionitemproperties/uwbootstrapaccordionitempropertiescommand';
+import { createAccordionItemId } from './uwbootstrapaccordionutils';
 
 export class InsertUwBootstrapAccordionItemCommand extends Command {
   execute(options = { positionOffset: 'before' }) {
@@ -6,13 +8,18 @@ export class InsertUwBootstrapAccordionItemCommand extends Command {
     const accordionItem = this.accordionItem;
     this.editor.model.change((writer) => {
       const accordion = accordionItem.parent;
-
+      const accordionId = accordion.getAttribute('uwBootstrapAccordionId');
+      const accordionItemNumber = createAccordionItemId();
       // Check if the accordion has an accordionItem already
       if (accordion.getChildIndex(accordionItem) === 0) {
         console.log('yes getChildIndex has a zero');
       }
 
-      const newAccordionItem = createBootstrapAccordionItem(writer);
+      const newAccordionItem = createBootstrapAccordionItem(
+        writer,
+        accordionId,
+        accordionItemNumber
+      );
       writer.insert(newAccordionItem, accordionItem, options.positionOffset);
     });
   }
@@ -31,16 +38,31 @@ export class InsertUwBootstrapAccordionItemCommand extends Command {
   }
 }
 
-export const createBootstrapAccordionItem = (writer) => {
+export const createBootstrapAccordionItem = (
+  writer,
+  accordionId,
+  accordionItemNumber
+) => {
   const bootstrapAccordionItem = writer.createElement(
     'uwBootstrapAccordionItem',
-    { uwBootstrapAccordionItemId: uid() }
+    { uwBootstrapAccordionItemId: `accordion-item-${accordionItemNumber}` }
+  );
+  const bootstrapAccordionHeader = writer.createElement(
+    'uwBootstrapAccordionHeader',
+    { uwBootstrapAccordionHeaderId: `collapse-${accordionItemNumber}-header` }
   );
   const bootstrapAccordionHeading = writer.createElement(
     'uwBootstrapAccordionHeading'
   );
   const bootstrapAccordionButton = writer.createElement(
-    'uwBootstrapAccordionButton'
+    'uwBootstrapAccordionButton',
+    {
+      buttonType: 'button',
+      buttonDataToggle: `collapse-${accordionItemNumber}`,
+      buttonDataTarget: `#collapse-${accordionItemNumber}`,
+      buttonAriaExpanded: 'false',
+      buttonAriaControls: `collapse-${accordionItemNumber}`,
+    }
   );
   const bootstrapAccordionButtonText = writer.createElement(
     'uwBootstrapAccordionButtonText'
@@ -49,7 +71,13 @@ export const createBootstrapAccordionItem = (writer) => {
     'uwBootstrapAccordionButtonArrow'
   );
   const bootstrapAccordionCollapse = writer.createElement(
-    'uwBootstrapAccordionCollapse'
+    'uwBootstrapAccordionCollapse',
+    {
+      'data-parent': `#${accordionId}`,
+      role: 'region',
+      id: `collapse-${accordionItemNumber}`,
+      'aria-labelledby': `collapse-${accordionItemNumber}-header`,
+    }
   );
   const bootstrapAccordionBody = writer.createElement(
     'uwBootstrapAccordionBody'
@@ -71,8 +99,9 @@ export const createBootstrapAccordionItem = (writer) => {
 
   // writer.append(bootstrapAccordionButtonArrow, bootstrapAccordionButton);
   writer.append(bootstrapAccordionButton, bootstrapAccordionHeading);
+  writer.append(bootstrapAccordionHeading, bootstrapAccordionHeader);
   writer.append(bootstrapAccordionBody, bootstrapAccordionCollapse);
-  writer.append(bootstrapAccordionHeading, bootstrapAccordionItem);
+  writer.append(bootstrapAccordionHeader, bootstrapAccordionItem);
   writer.append(bootstrapAccordionCollapse, bootstrapAccordionItem);
 
   return bootstrapAccordionItem;

@@ -3,6 +3,7 @@ import {
   _getSelectedAccordionModelElement,
   _getSelectedAccordionWidget,
   findElement,
+  findModelElement,
 } from '../uwbootstrapaccordionutils';
 
 export class UwBootstrapAccordionItemPropertiesCommand extends Command {
@@ -18,7 +19,7 @@ export class UwBootstrapAccordionItemPropertiesCommand extends Command {
     if (!uwBootstrapAccordionItemEl) {
       return;
     }
-    console.log('uwBootstrapAccordionItemEl', uwBootstrapAccordionItemEl);
+    // console.log('uwBootstrapAccordionItemEl', uwBootstrapAccordionItemEl);
 
     this.value = {};
 
@@ -35,15 +36,16 @@ export class UwBootstrapAccordionItemPropertiesCommand extends Command {
     const childEl = uwBootstrapAccordionItemEl
       .getChild(0)
       .getChild(0)
+      .getChild(0)
       .getChild(0);
     this.value[childEl.name] = childEl.getChild(0)._data;
 
-    console.log('REFRESH', this.value);
+    // this.value;
+    // console.log('REFRESH', this.value);
   }
 
   execute(values) {
-    console.log('EXECUTE', values);
-    // console.log('THIS.VALUE', this.value);
+    // console.log('EXECUTE', values);
     const { model } = this.editor;
     const selection = model.document.selection;
     // console.log('model', model);
@@ -54,11 +56,58 @@ export class UwBootstrapAccordionItemPropertiesCommand extends Command {
         selection,
         'uwBootstrapAccordionItem'
       );
-      // console.log(uwBootstrapAccordionEl);
+      // console.log(uwBootstrapAccordionItemEl);
+
+      if (
+        values.uwBootstrapAccordionItemId !==
+        uwBootstrapAccordionItemEl.getAttribute('uwBootstrapAccordionItemId')
+      ) {
+        const uwBootstrapAccordionButtonEl = findModelElement(
+          this.editor,
+          uwBootstrapAccordionItemEl,
+          'uwBootstrapAccordionButton'
+        );
+        const uwBootstrapAccordionCollapseEl = findModelElement(
+          this.editor,
+          uwBootstrapAccordionItemEl,
+          'uwBootstrapAccordionCollapse'
+        );
+
+        writer.setAttributes(
+          {
+            buttonDataToggle: `collapse-${values.uwBootstrapAccordionItemId}`,
+            buttonDataTarget: `#collapse-${values.uwBootstrapAccordionItemId}`,
+            buttonAriaControls: `collapse-${values.uwBootstrapAccordionItemId}`,
+            uwBootstrapAccordionButtonCollapseState:
+              values.openCollapseSwitchButton,
+          },
+          uwBootstrapAccordionButtonEl
+        );
+
+        writer.setAttributes(
+          {
+            id: `collapse-${values.uwBootstrapAccordionItemId}`,
+            'aria-labelledby': `collapse-${values.uwBootstrapAccordionItemId}-header`,
+            uwBootstrapAccordionItemDefaultCollapse:
+              values.openCollapseSwitchButton,
+            uwBootstrapAccordionCollapseState: values.openCollapseSwitchButton,
+          },
+          uwBootstrapAccordionCollapseEl
+        );
+
+        //   itemPropertiesFormView.openCollapseSwitchButton.isOn,
+        if (values.openCollapseSwitchButton) {
+          writer.setAttribute(
+            'uwBootstrapAccordionCollapseState',
+            values.openCollapseSwitchButton,
+            uwBootstrapAccordionCollapseEl
+          );
+        }
+      }
 
       if (values.uwBootstrapAccordionItemId) {
         console.log('values.id in execute', values.uwBootstrapAccordionId);
-        // Set the id for the uwBootstrapAccordion.
+        // Set the id for the uwBootstrapAccordionItem.
         writer.setAttribute(
           'uwBootstrapAccordionItemId',
           values.uwBootstrapAccordionItemId,
@@ -74,16 +123,9 @@ export class UwBootstrapAccordionItemPropertiesCommand extends Command {
         );
       }
 
-      // if (values.uwBootstrapAccordionTitleWeight) {
-      //   writer.setAttribute(
-      //     'uwBootstrapAccordionTitleWeight',
-      //     values.uwBootstrapAccordionTitleWeight,
-      //     uwBootstrapAccordionEl
-      //   );
-      // }
-
-      // The uwBootstrapAccordionButtonText is the third child in the schema. Get it.
+      // The uwBootstrapAccordionButtonText is the fourth child in the schema. Get it.
       const uwBootstrapAccordionButtonTextEl = uwBootstrapAccordionItemEl
+        .getChild(0)
         .getChild(0)
         .getChild(0)
         .getChild(0);

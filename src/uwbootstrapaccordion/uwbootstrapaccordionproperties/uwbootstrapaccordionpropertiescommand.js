@@ -24,7 +24,7 @@ export class UwBootstrapAccordionPropertiesCommand extends Command {
     // Process accordionEl attributes
     for (const [attrKey, attrValue] of uwBootstrapAccordionEl.getAttributes()) {
       this.value[attrKey] = attrValue;
-      console.log('attributes', attrKey, attrValue);
+      // console.log('attributes', attrKey, attrValue);
     }
 
     // Get the first child and its data which will be the accessible title.
@@ -32,11 +32,11 @@ export class UwBootstrapAccordionPropertiesCommand extends Command {
     const childTextNode = childEl.getChild(0);
     this.value[childEl.name] = childTextNode._data;
 
-    console.log('REFRESH', this.value);
+    // console.log('REFRESH', this.value);
   }
 
   execute(values) {
-    console.log('EXECUTE', values);
+    // console.log('EXECUTE', values);
     // console.log('THIS.VALUE', this.value);
     const { model } = this.editor;
     const selection = model.document.selection;

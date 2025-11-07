@@ -386,7 +386,7 @@ export default class UwBootstrapAccordionEditing extends Plugin {
       view: 'id',
     });
 
-    // uwBootstrapAccordionHeader converters
+    // uwBootstrapAccordionHeader converters.
     conversion.for('upcast').elementToElement({
       model: 'uwBootstrapAccordionHeader',
       view: {
@@ -402,16 +402,6 @@ export default class UwBootstrapAccordionEditing extends Plugin {
       },
     });
     conversion.for('editingDowncast').elementToElement({
-      // model: 'uwBootstrapAccordionHeader',
-      // view: (modelElement, { writer: viewWriter }) => {
-      //   const section = viewWriter.createContainerElement('div', {
-      //     class: 'card-header',
-      //   });
-
-      //   return toWidget(section, viewWriter, {
-      //     label: 'card header',
-      //   });
-      // },
       model: 'uwBootstrapAccordionHeader',
       view: {
         name: 'div',
@@ -419,7 +409,7 @@ export default class UwBootstrapAccordionEditing extends Plugin {
       },
     });
 
-    // uwBootstrapAccordionHeading converters
+    // uwBootstrapAccordionHeading converters.
     conversion.for('upcast').elementToElement({
       model: 'uwBootstrapAccordionHeading',
       view: {
@@ -445,110 +435,26 @@ export default class UwBootstrapAccordionEditing extends Plugin {
     // uwBootstrapAccordionButton converters
     // See: https://ckeditor.com/docs/ckeditor5/latest/framework/deep-dive/conversion/upcast.html.
     // There is no structure to element conversion for upcast, so we need to use the event-based API.
-    // conversion.for('upcast').add((dispatcher) => {
-    //   // Look for every view <h3> element.
-    //   dispatcher.on('element:button', (evt, data, conversionApi) => {
-    //     // Get all the necessary items from the conversion API object.
-    //     const {
-    //       consumable,
-    //       writer,
-    //       safeInsert,
-    //       convertChildren,
-    //       updateConversionResult,
-    //     } = conversionApi;
-
-    //     // Get view item from data object.
-    //     const { viewItem } = data;
-
-    //     // Define elements consumables.
-    //     const wrapper = {
-    //       name: true,
-    //       classes: ['btn', 'btn-link'],
-    //       attributes: [
-    //         'type',
-    //         'data-toggle',
-    //         'data-target',
-    //         'aria-expanded',
-    //         'aria-controls',
-    //       ],
-    //     };
-    //     const innerWrapper = {
-    //       name: true,
-    //       classes: ['btn', 'btn-link'],
-    //       attributes: [
-    //         'type',
-    //         'data-toggle',
-    //         'data-target',
-    //         'aria-expanded',
-    //         'aria-controls',
-    //       ],
-    //     };
-    //     console.log(viewItem);
-    //     // Tests if the view element can be consumed.
-    //     if (!consumable.test(viewItem, wrapper)) {
-    //       return;
-    //     }
-
-    //     // Check if there is only one child.
-    //     if (viewItem.childCount !== 1) {
-    //       return;
-    //     }
-
-    //     // Get the first child element.
-    //     const firstChildItem = viewItem.getChild(0);
-    //     // Check if the first element is a <button>.
-    //     if (!firstChildItem.is('element', 'button')) {
-    //       return;
-    //     }
-    //     console.log('firstChildItem', firstChildItem);
-
-    //     // Tests if the first child element can be consumed.
-    //     if (!consumable.test(firstChildItem, innerWrapper)) {
-    //       console.log('gonna return', firstChildItem, innerWrapper);
-    //       return;
-    //     }
-
-    //     // Create model element.
-    //     const modelElement = writer.createElement(
-    //       'uwBootstrapAccordionButton',
-    //       {
-    //         buttonType: firstChildItem.getAttribute('type'),
-    //         buttonDataToggle: firstChildItem.getAttribute('data-toggle'),
-    //         buttonDataTarget: firstChildItem.getAttribute('data-target'),
-    //         buttonAriaExpanded: firstChildItem.getAttribute('aria-expanded'),
-    //         buttonAriaControls: firstChildItem.getAttribute('aria-controls'),
-    //       }
-    //     );
-    //     console.log('modelElement', modelElement);
-    //     // Insert element on a current cursor location.
-    //     if (!safeInsert(modelElement, data.modelCursor)) {
-    //       return;
-    //     }
-
-    //     // Consume the main outer wrapper element.
-    //     consumable.consume(viewItem, wrapper);
-    //     // Consume the inner wrapper element.
-    //     consumable.consume(firstChildItem, innerWrapper);
-
-    //     // console.log('HETE!!!!', firstChildItem);
-    //     // Handle children conversion inside inner wrapper element.
-    //     convertChildren(firstChildItem, modelElement);
-
-    //     // console.log('almost FINISHED', modelElement);
-    //     // Necessary function call to help setting model range and cursor
-    //     // for some specific cases when elements being split.
-    //     updateConversionResult(modelElement, data);
-    //   });
-    // });
-
     conversion.for('upcast').elementToElement({
       view: {
         name: 'button',
-        classes: ['btn', 'btn-link', 'collapsed'],
+        classes: ['btn', 'btn-link'],
       },
-      model: (viewElement, { writer }) => {
-        return writer.createElement('uwBootstrapAccordionButton');
-      },
+      // Write the model element. Use the class values in the view to determine the attribute value for
+      // uwBootstrapAccordionCollapseState. Set that value as we create the model element.
+      model: ( viewElement, { writer }) => {
+        const modelElement = writer.createElement('uwBootstrapAccordionButton');
+        const viewValue = viewElement.getAttribute('class');
+        console.log(viewValue);
+        const valueToSet = viewValue.includes('collapsed') ? false : true;
+        console.log(valueToSet)
+        writer.setAttribute('uwBootstrapAccordionButtonCollapseState', valueToSet, modelElement);
+
+        return modelElement;
+      }
+      // model: (viewElement, { writer }) => {
+      //   return writer.createElement('uwBootstrapAccordionButton');
+      // },
     });
 
     conversion.for('dataDowncast').elementToStructure({
@@ -567,7 +473,7 @@ export default class UwBootstrapAccordionEditing extends Plugin {
         const buttonViewElement = writer.createContainerElement(
           'button',
           {
-            class: modelElement.getAttribute('class'),
+            class:  modelElement.getAttribute( 'uwBootstrapAccordionButtonCollapseState' ) ? 'btn btn-link' : 'btn btn-link collapsed',
             type: modelElement.getAttribute('buttonType'),
             'data-toggle': modelElement.getAttribute('buttonDataToggle'),
             'data-target': modelElement.getAttribute('buttonDataTarget'),
@@ -596,10 +502,11 @@ export default class UwBootstrapAccordionEditing extends Plugin {
           { class: 'arrow-box' },
           [arrowBoxInnerSpanElement]
         );
+        // console.log('XXXX', modelElement.getAttribute('uwBootstrapAccordionButtonCollapseState'))
         const buttonViewElement = writer.createContainerElement(
           'button',
           {
-            class: modelElement.getAttribute('class'),
+            class:  modelElement.getAttribute( 'uwBootstrapAccordionButtonCollapseState' ) ? 'btn btn-link' : 'btn btn-link collapsed',
             type: modelElement.getAttribute('buttonType'),
             'data-toggle': modelElement.getAttribute('buttonDataToggle'),
             'data-target': modelElement.getAttribute('buttonDataTarget'),
@@ -618,10 +525,9 @@ export default class UwBootstrapAccordionEditing extends Plugin {
     // uwBootstrapAccordionButtonText
     // <justAButtonText> converters
     conversion.for('upcast').elementToElement({
-      // model: 'justAButtonText',
       model: (viewElement, { writer }) => {
         const textClasses = viewElement.getAttribute('class');
-        // console.log('upcast for justAButtonText', viewElement);
+
         return writer.createElement('uwBootstrapAccordionButtonText', {
           textClasses,
         });
@@ -675,7 +581,7 @@ export default class UwBootstrapAccordionEditing extends Plugin {
       view: (modelAttributeValue) => {
         return {
           key: 'class',
-          value: modelAttributeValue === true ? ['btn', 'btn-link', 'collapsed'] : ['btn', 'btn-link']
+          value: modelAttributeValue === false ? ['btn', 'btn-link', 'collapsed'] : ['btn', 'btn-link']
         };
       },
     });

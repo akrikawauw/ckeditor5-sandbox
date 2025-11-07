@@ -40,12 +40,14 @@ export class UwBootstrapAccordionItemPropertiesCommand extends Command {
       .getChild(0);
     this.value[childEl.name] = childEl.getChild(0)._data;
 
-    // this.value;
-    // console.log('REFRESH', this.value);
+    // Get the value for uwBootstrapAccordionCollapseState.
+    const uwBootstrapAccordionCollapseState = findModelElement(this.editor, uwBootstrapAccordionItemEl, 'uwBootstrapAccordionCollapse').getAttribute('uwBootstrapAccordionCollapseState');
+    this.value['uwBootstrapAccordionCollapseState'] = uwBootstrapAccordionCollapseState;
+
   }
 
   execute(values) {
-    console.log('EXECUTE', values);
+    // console.log('EXECUTE', values);
     const { model } = this.editor;
     const selection = model.document.selection;
     // console.log('model', model);
@@ -56,30 +58,27 @@ export class UwBootstrapAccordionItemPropertiesCommand extends Command {
         selection,
         'uwBootstrapAccordionItem'
       );
+      const uwBootstrapAccordionButtonEl = findModelElement(
+        this.editor,
+        uwBootstrapAccordionItemEl,
+        'uwBootstrapAccordionButton'
+      );
+      const uwBootstrapAccordionCollapseEl = findModelElement(
+        this.editor,
+        uwBootstrapAccordionItemEl,
+        'uwBootstrapAccordionCollapse'
+      );
       // console.log(uwBootstrapAccordionItemEl);
 
       if (
         values.uwBootstrapAccordionItemId !==
         uwBootstrapAccordionItemEl.getAttribute('uwBootstrapAccordionItemId')
       ) {
-        const uwBootstrapAccordionButtonEl = findModelElement(
-          this.editor,
-          uwBootstrapAccordionItemEl,
-          'uwBootstrapAccordionButton'
-        );
-        const uwBootstrapAccordionCollapseEl = findModelElement(
-          this.editor,
-          uwBootstrapAccordionItemEl,
-          'uwBootstrapAccordionCollapse'
-        );
-
         writer.setAttributes(
           {
             buttonDataToggle: `collapse-${values.uwBootstrapAccordionItemId}`,
             buttonDataTarget: `#collapse-${values.uwBootstrapAccordionItemId}`,
             buttonAriaControls: `collapse-${values.uwBootstrapAccordionItemId}`,
-            uwBootstrapAccordionButtonCollapseState:
-              values.openCollapseSwitchButton,
           },
           uwBootstrapAccordionButtonEl
         );
@@ -88,19 +87,9 @@ export class UwBootstrapAccordionItemPropertiesCommand extends Command {
           {
             id: `collapse-${values.uwBootstrapAccordionItemId}`,
             'aria-labelledby': `collapse-${values.uwBootstrapAccordionItemId}-header`,
-            uwBootstrapAccordionCollapseState: values.openCollapseSwitchButton,
           },
           uwBootstrapAccordionCollapseEl
         );
-
-        //   itemPropertiesFormView.openCollapseSwitchButton.isOn,
-        if (values.openCollapseSwitchButton) {
-          writer.setAttribute(
-            'uwBootstrapAccordionCollapseState',
-            values.openCollapseSwitchButton,
-            uwBootstrapAccordionCollapseEl
-          );
-        }
       }
 
       if (values.uwBootstrapAccordionItemId) {
@@ -154,6 +143,17 @@ export class UwBootstrapAccordionItemPropertiesCommand extends Command {
           'end'
         );
       }
+
+      writer.setAttribute(
+        'uwBootstrapAccordionCollapseState',
+        values.uwBootstrapAccordionCollapseState,
+        uwBootstrapAccordionCollapseEl
+      );
+      writer.setAttribute(
+        'uwBootstrapAccordionButtonCollapseState',
+        values.uwBootstrapAccordionButtonCollapseState,
+        uwBootstrapAccordionButtonEl
+      );
     });
   }
 }

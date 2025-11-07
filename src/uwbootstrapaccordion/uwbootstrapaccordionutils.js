@@ -231,12 +231,12 @@ export function createAccordionItemId() {
       );
     }
   }
-  console.log('accordionItemIds', accordionItemIds);
+  // console.log('accordionItemIds', accordionItemIds);
   // Find any that match pattern 'bootstrap-accordion--1234'.
   const possibleMatches = accordionItemIds.filter((item) =>
     item.match(/^accordion-item-\d+/g)
   );
-  console.log('possible matches A', possibleMatches);
+  // console.log('possible matches A', possibleMatches);
 
   // If there are any matches, iterate through them and get rid of anything,
   // but numbers.

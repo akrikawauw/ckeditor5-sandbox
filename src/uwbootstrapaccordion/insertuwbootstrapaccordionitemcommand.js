@@ -10,6 +10,7 @@ export class InsertUwBootstrapAccordionItemCommand extends Command {
       const accordion = accordionItem.parent;
       const accordionId = accordion.getAttribute('uwBootstrapAccordionId');
       const accordionItemNumber = createAccordionItemId();
+      console.log('accordionItemNumber', accordionItemNumber);
       // Check if the accordion has an accordionItem already
       if (accordion.getChildIndex(accordionItem) === 0) {
         console.log('yes getChildIndex has a zero');

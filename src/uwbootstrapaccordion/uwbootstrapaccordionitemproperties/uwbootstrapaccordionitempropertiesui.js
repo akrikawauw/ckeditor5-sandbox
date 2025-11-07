@@ -84,10 +84,9 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
 
     this.listenTo(itemPropertiesFormView, 'submit', () => {
       // Get our value for the switch button.
-      // const collapseStateForModel =
-      //   itemPropertiesFormView.openCollapseSwitchButton.isOn === true ? true : false;
-      //     ? 'show'
-      //     : 'collapsed';
+      const collapseStateForModel =
+        itemPropertiesFormView.openCollapseSwitchButton.isOn === true ? true : false;
+
 
       let values = {
         uwBootstrapAccordionItemId:
@@ -95,9 +94,9 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
         uwBootstrapAccordionButtonText:
           itemPropertiesFormView.accordionButtonText.fieldView.element.value,
         uwBootstrapAccordionCollapseState:
-          itemPropertiesFormView.openCollapseSwitchButton.isOn,
+         collapseStateForModel,
         uwBootstrapAccordionButtonCollapseState:
-          itemPropertiesFormView.openCollapseSwitchButton.isOn,
+         collapseStateForModel,
       };
       this.editor.execute('uwBootstrapAccordionItemProperties', values);
 
@@ -152,7 +151,7 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
     // Handle text input fields.
     Object.entries(modelToFormFields).forEach(([modelName, formElName]) => {
       const formEl = this.itemPropertiesFormView[formElName];
-      console.log(formElName, formEl);
+      // console.log(formElName, formEl);
       // Needed to display a placeholder of the elements being focused before.
       formEl.focus();
 
@@ -170,7 +169,7 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
     // Handle the switch input field(s).
     const modelToSwitchButtons = {
       uwBootstrapAccordionCollapseState: 'openCollapseSwitchButton',
-      uwBootstrapAccordionButtonCollapseState: 'openCollapseSwitchButton',
+      // uwBootstrapAccordionButtonCollapseState: 'openCollapseSwitchButton',
     };
 
     // this.propertiesFormView;
@@ -180,8 +179,12 @@ export default class UwBootstrapAccordionItemPropertiesUI extends Plugin {
       console.log(formEl);
       formEl.focus();
       let isOn = false;
+      if (formElName === 'openCollapseSwitchButton') {
+        isOn = command.value[modelName];
+      }
       // Needed to display a placeholder of the elements being focused before.
-      isOn = command.value[modelName] === 'show';
+      // console.log(command.value[modelName])
+      // isOn = command.value[modelName] === true;
       formEl.set('isOn', isOn);
     });
   }

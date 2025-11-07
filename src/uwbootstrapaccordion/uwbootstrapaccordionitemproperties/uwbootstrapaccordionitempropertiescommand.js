@@ -45,7 +45,7 @@ export class UwBootstrapAccordionItemPropertiesCommand extends Command {
   }
 
   execute(values) {
-    // console.log('EXECUTE', values);
+    console.log('EXECUTE', values);
     const { model } = this.editor;
     const selection = model.document.selection;
     // console.log('model', model);
@@ -88,8 +88,6 @@ export class UwBootstrapAccordionItemPropertiesCommand extends Command {
           {
             id: `collapse-${values.uwBootstrapAccordionItemId}`,
             'aria-labelledby': `collapse-${values.uwBootstrapAccordionItemId}-header`,
-            uwBootstrapAccordionItemDefaultCollapse:
-              values.openCollapseSwitchButton,
             uwBootstrapAccordionCollapseState: values.openCollapseSwitchButton,
           },
           uwBootstrapAccordionCollapseEl

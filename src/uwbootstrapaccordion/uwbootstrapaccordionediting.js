@@ -194,7 +194,6 @@ export default class UwBootstrapAccordionEditing extends Plugin {
 
     schema.register('uwBootstrapAccordionCollapse', {
       allowIn: 'uwBootstrapAccordionItem',
-      allowAttributes: ['id'],
       allowChildren: 'uwBootstrapAccordionBody',
       allowAttributes: [
         'data-parent',
@@ -545,7 +544,7 @@ export default class UwBootstrapAccordionEditing extends Plugin {
     conversion.for('upcast').elementToElement({
       view: {
         name: 'button',
-        classes: ['btn', 'btn-link'],
+        classes: ['btn', 'btn-link', 'collapsed'],
       },
       model: (viewElement, { writer }) => {
         return writer.createElement('uwBootstrapAccordionButton');
@@ -568,10 +567,10 @@ export default class UwBootstrapAccordionEditing extends Plugin {
         const buttonViewElement = writer.createContainerElement(
           'button',
           {
-            class: 'btn btn-link',
+            class: modelElement.getAttribute('class'),
             type: modelElement.getAttribute('buttonType'),
             'data-toggle': modelElement.getAttribute('buttonDataToggle'),
-            'data-target': modelElement.getAttribute('butonDataTarget'),
+            'data-target': modelElement.getAttribute('buttonDataTarget'),
             'aria-expanded': modelElement.getAttribute('buttonAriaExpanded'),
             'aria-controls': modelElement.getAttribute('buttonAriaControls'),
           },
@@ -600,10 +599,10 @@ export default class UwBootstrapAccordionEditing extends Plugin {
         const buttonViewElement = writer.createContainerElement(
           'button',
           {
-            class: 'btn btn-link',
+            class: modelElement.getAttribute('class'),
             type: modelElement.getAttribute('buttonType'),
             'data-toggle': modelElement.getAttribute('buttonDataToggle'),
-            'data-target': modelElement.getAttribute('butonDataTarget'),
+            'data-target': modelElement.getAttribute('buttonDataTarget'),
             'aria-expanded': modelElement.getAttribute('buttonAriaExpanded'),
             'aria-controls': modelElement.getAttribute('buttonAriaControls'),
           },
@@ -640,104 +639,43 @@ export default class UwBootstrapAccordionEditing extends Plugin {
         classes: ['btn-text'],
       },
     });
-    /*
-    conversion.for('editingDowncast').elementToElement({
-      model: 'uwBootstrapAccordionButtonText',
-      view: (modelElement, { writer: viewWriter }) => {
-        const span = viewWriter.createElement('span', {
-          class: 'btn-text',
-        });
-        return span;
-        // });
-        // const span = viewWriter.createEditableElement('span', {
-        //   class: 'btn-text',
-        // });
-        // return toWidget(span, viewWriter, {
-        //   label: 'Edit button text',
-        // });
-        // return toWidgetEditable(span, viewWriter, {
-        //   label: 'Edit button text',
-        // });
-      },
-    });
-*/
-    // uwBootstrapButtonArrow
-    // conversion.for('upcast').elementToElement({
-    //   model: 'uwBootstrapAccordionButtonArrow',
-    //   view: {
-    //     name: 'span',
-    //     class: 'arrow-box',
-    //   },
-    // });
-
-    // conversion.for('downcast').elementToElement({
-    //   model: 'uwBoostrapAccordionButtonArrow',
-    //   view: (modelElement, { writer }) => {
-    //     // You can add attributes to the span if needed
-    //     return writer.createAttributeElement(
-    //       'span',
-    //       {
-    //         class: 'arrow-box',
-    //       },
-    //       { id: 'marker:my' }
-    //     );
-    //   },
-    // });
-    // conversion.for('dataDowncast').elementToElement({
-    //   model: 'uwBoostrapAccordionButtonArrow',
-    //   view: {
-    //     name: 'span',
-    //     classes: 'arrow-box',
-    //   },
-    // });
-    // conversion.for('editingDowncast').elementToElement({
-    //   model: 'uwBoostrapAccordionButtonArrow',
-    //   view: {
-    //     name: 'span',
-    //     classes: 'arrow-box',
-    //   },
-    // });
 
     // uwBootstrapAccordionCollapse
     conversion.for('upcast').elementToElement({
-      model: 'uwBootstrapAccordionCollapse',
       view: {
         name: 'div',
-        classes: 'collapse',
+        classes: ['collapse']
       },
+      // Write the model element. Use the class values in the view to determine the attribute value for
+      // uwBootstrapAccordionCollapseState. Set that value as we create the model element.
+      model: ( viewElement, { writer }) => {
+        const modelElement = writer.createElement('uwBootstrapAccordionCollapse');
+        const viewValue = viewElement.getAttribute('class');
+        const valueToSet = viewValue.includes('show') ? true : false;
+        writer.setAttribute('uwBootstrapAccordionCollapseState', valueToSet, modelElement);
+
+        return modelElement;
+      }
     });
-    conversion.for('editingDowncast').elementToElement({
-      model: 'uwBootstrapAccordionCollapse',
-      view: {
-        name: 'div',
-        classes: 'collapse',
+    conversion.for('downcast').elementToElement({
+      model: {
+        name: 'uwBootstrapAccordionCollapse',
+        attributes: [ 'uwBootstrapAccordionCollapseState' ]
       },
+      view: ( modelElement, { writer } ) => {
+        return writer.createContainerElement(
+          'div', {'class':  modelElement.getAttribute( 'uwBootstrapAccordionCollapseState' ) ? 'collapse show' : 'collapse'}
+        );
+      }
     });
-    conversion.for('dataDowncast').elementToElement({
-      model: 'uwBootstrapAccordionCollapse',
-      view: {
-        name: 'div',
-        classes: 'collapse',
-      },
-    });
-    conversion.attributeToAttribute({
-      model: 'uwBootstrapAccordionCollapseState',
-      view: (modelAttributeValue) => {
-        return {
-          key: 'class',
-          value: modelAttributeValue === false ? 'collapse' : 'collapse show',
-        };
-      },
-    });
+
     // Put this here for now while developing this collapse / show state.
     conversion.attributeToAttribute({
       model: 'uwBootstrapAccordionButtonCollapseState',
       view: (modelAttributeValue) => {
         return {
           key: 'class',
-          value: modelAttributeValue === false ? 'collapse' : 'collapse show',
-          key: 'aria-expanded',
-          value: modelAttributeValue,
+          value: modelAttributeValue === true ? ['btn', 'btn-link', 'collapsed'] : ['btn', 'btn-link']
         };
       },
     });
